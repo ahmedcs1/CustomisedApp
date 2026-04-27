@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جدولي الأسبوعي الكامل</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#080c10;--s1:#0f1720;--s2:#162030;--s3:#1e2d42;--gym:#22d3ee;--home:#34d399;--warn:#f59e0b;--danger:#f87171;--purple:#a78bfa;--text:#e2e8f0;--muted:#64748b;--border:#1e293b;--r:14px;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);direction:rtl;min-height:100vh;}
+.hero{background:linear-gradient(160deg,#080c10 0%,#0d1f35 50%,#080c10 100%);padding:40px 18px 30px;text-align:center;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(34,211,238,.15) 0%,transparent 60%);}
+.hero-emoji{font-size:48px;display:block;margin-bottom:10px;animation:float 3s ease-in-out infinite;position:relative;}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.hero h1{font-size:clamp(19px,5vw,27px);font-weight:900;color:var(--gym);position:relative;}
+.hero p{margin-top:7px;font-size:12px;color:var(--muted);line-height:1.7;max-width:400px;margin-inline:auto;position:relative;}
+.tags{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-top:12px;position:relative;}
+.tag{padding:3px 11px;border-radius:20px;font-size:11px;font-weight:700;}
+.tg{background:rgba(34,211,238,.15);border:1px solid rgba(34,211,238,.3);color:var(--gym);}
+.th{background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.3);color:var(--home);}
+.tw{background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:var(--warn);}
+.tp{background:rgba(167,139,250,.15);border:1px solid rgba(167,139,250,.3);color:var(--purple);}
+.nav{position:sticky;top:0;z-index:50;background:rgba(8,12,16,.96);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:0 8px;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;}
+.nav::-webkit-scrollbar{display:none;}
+.nb{flex-shrink:0;background:none;border:none;color:var(--muted);font-family:inherit;font-size:11px;font-weight:700;padding:12px 10px;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;}
+.nb.active,.nb:hover{color:var(--gym);border-bottom-color:var(--gym);}
+section{display:none;padding:16px 13px 80px;max-width:700px;margin:auto;}
+section.active{display:block;animation:fi .3s ease;}
+@keyframes fi{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.sec-title{font-size:16px;font-weight:900;margin-bottom:13px;display:flex;align-items:center;gap:9px;}
+.sec-title::after{content:'';flex:1;height:1px;background:var(--border);}
+.alert{border-radius:var(--r);padding:12px 14px;margin-bottom:14px;display:flex;gap:10px;}
+.aw{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);}
+.aw p{font-size:12px;color:#fbbf24;line-height:1.7;}
+.aw strong{color:var(--warn);}
+.week-grid{display:grid;gap:8px;margin-bottom:16px;}
+.day-row{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:13px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s;user-select:none;}
+.day-row:hover{border-color:rgba(34,211,238,.3);}
+.day-row.today{border-color:rgba(34,211,238,.5);background:rgba(34,211,238,.06);}
+.day-badge{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.gym-day .day-badge{background:rgba(34,211,238,.15);border:1px solid rgba(34,211,238,.3);}
+.home-day .day-badge{background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.3);}
+.rest-day .day-badge{background:rgba(100,116,139,.1);border:1px solid rgba(100,116,139,.2);}
+.day-info{flex:1;}
+.day-name{font-size:14px;font-weight:800;display:flex;align-items:center;gap:7px;}
+.day-type{font-size:11px;margin-top:2px;}
+.gym-day .day-type{color:var(--gym);}
+.home-day .day-type{color:var(--home);}
+.rest-day .day-type{color:var(--muted);}
+.day-time{font-size:10px;color:var(--muted);}
+.today-pill{background:var(--gym);color:#000;font-size:9px;font-weight:800;padding:2px 7px;border-radius:8px;}
+.arr{color:var(--muted);font-size:10px;transition:transform .25s;flex-shrink:0;}
+.day-row.open .arr{transform:rotate(180deg);}
+.day-detail{display:none;background:var(--s2);border:1px solid var(--border);border-top:none;border-radius:0 0 var(--r) var(--r);padding:13px;margin-top:-8px;margin-bottom:8px;}
+.day-detail.visible{display:block;}
+.block-title{font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.5px;margin-bottom:8px;margin-top:12px;display:flex;align-items:center;gap:7px;}
+.block-title:first-child{margin-top:0;}
+.block-title::after{content:'';flex:1;height:1px;background:var(--border);}
+.ec{background:var(--s1);border:1px solid var(--border);border-radius:10px;margin-bottom:7px;overflow:hidden;}
+.ech{display:flex;align-items:center;gap:9px;padding:10px 11px;}
+.en{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;flex-shrink:0;}
+.gn{background:rgba(34,211,238,.15);color:var(--gym);border:1px solid rgba(34,211,238,.25);}
+.hn{background:rgba(52,211,153,.15);color:var(--home);border:1px solid rgba(52,211,153,.25);}
+.wn{background:rgba(245,158,11,.15);color:var(--warn);border:1px solid rgba(245,158,11,.25);}
+.et{flex:1;}
+.et h4{font-size:12px;font-weight:700;}
+.et small{font-size:10px;color:var(--muted);}
+.es{font-size:11px;font-weight:700;color:var(--gym);white-space:nowrap;flex-shrink:0;}
+.eb{padding:0 11px 10px;}
+.edesc{font-size:11px;color:#94a3b8;line-height:1.6;background:var(--s3);border-radius:7px;padding:8px 9px;margin-bottom:7px;}
+.erow{display:flex;gap:5px;flex-wrap:wrap;align-items:center;}
+.badge{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:12px;font-size:10px;font-weight:700;}
+.bg{background:rgba(52,211,153,.15);color:var(--home);border:1px solid rgba(52,211,153,.25);}
+.bc{background:rgba(34,211,238,.15);color:var(--gym);border:1px solid rgba(34,211,238,.25);}
+.bw{background:rgba(245,158,11,.15);color:var(--warn);border:1px solid rgba(245,158,11,.25);}
+.br{background:rgba(248,113,113,.12);color:var(--danger);border:1px solid rgba(248,113,113,.25);font-size:9px;}
+.bp{background:rgba(167,139,250,.15);color:var(--purple);border:1px solid rgba(167,139,250,.25);}
+.vb{display:inline-flex;align-items:center;gap:4px;background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.25);color:var(--gym);border-radius:7px;padding:4px 9px;font-family:inherit;font-size:10px;font-weight:700;cursor:pointer;text-decoration:none;transition:all .2s;}
+.vb:hover{background:rgba(34,211,238,.2);}
+.tip-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:13px;margin-bottom:10px;}
+.tip-card h4{font-size:13px;font-weight:800;margin-bottom:9px;display:flex;align-items:center;gap:7px;}
+.tlist{list-style:none;display:flex;flex-direction:column;gap:7px;}
+.tlist li{font-size:12px;color:#94a3b8;line-height:1.55;display:flex;gap:8px;}
+.tlist li::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--gym);flex-shrink:0;margin-top:5px;}
+.tlist li.wt::before{background:var(--warn);}
+.tlist li.dt::before{background:var(--danger);}
+.pos-grid{display:grid;gap:9px;margin-bottom:14px;}
+.pc{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:12px;border-right:3px solid var(--gym);}
+.pc.wc{border-right-color:var(--warn);}
+.pc.dc{border-right-color:var(--danger);}
+.pc.pur{border-right-color:var(--purple);}
+.pc h4{font-size:13px;font-weight:800;margin-bottom:5px;}
+.pc p{font-size:12px;color:#94a3b8;line-height:1.6;}
+.pw{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:13px;}
+.pl{font-size:12px;color:var(--muted);margin-bottom:7px;display:flex;justify-content:space-between;}
+.pl span{color:var(--gym);font-weight:700;}
+.pb-bg{background:var(--s3);border-radius:8px;height:9px;overflow:hidden;}
+.pb{height:100%;background:linear-gradient(90deg,var(--gym),#818cf8);border-radius:8px;transition:width .4s ease;width:0%;}
+.cl{display:flex;flex-direction:column;gap:7px;}
+.ci{background:var(--s1);border:1px solid var(--border);border-radius:9px;padding:10px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:border-color .2s;user-select:none;}
+.ci:hover{border-color:rgba(52,211,153,.4);}
+.ci.done{border-color:rgba(52,211,153,.5);background:rgba(52,211,153,.05);}
+.ci.gci{border-color:rgba(34,211,238,.2);}
+.cb{width:19px;height:19px;border-radius:4px;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s;font-size:11px;}
+.ci.done .cb{background:var(--home);border-color:var(--home);color:#000;}
+.ct{font-size:12px;}
+.ci.done .ct{text-decoration:line-through;color:var(--muted);}
+
+.back-main{
+  position:sticky;top:0;z-index:100;background:rgba(8,12,16,.98);
+  border-bottom:1px solid var(--border);padding:10px 12px;text-align:center;
+}
+.back-main a{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  background:linear-gradient(90deg,var(--gym),#818cf8);color:#001018;
+  text-decoration:none;font-weight:900;border-radius:12px;padding:9px 14px;font-size:12px;
+}
+
+</style>
+</head>
+<body>
+
+<div class="back-main">
+  <a href="index.html">⬅ الرجوع للتطبيق الرئيسي</a>
+</div>
+
+
+<div class="hero">
+  <span class="hero-emoji">📅</span>
+  <h1>جدولي الأسبوعي الكامل</h1>
+  <p>دوام 7–4 · جيم الاثنين والأربعاء والسبت · تمارين بيت بالليل<br>تقوية عضلات الظهر ودعم العمود الفقري</p>
+  <div class="tags">
+    <span class="tag tg">🏋 جيم × 3</span>
+    <span class="tag th">🏠 بيت يومي</span>
+    <span class="tag tp">🧍 تصحيح وضعية</span>
+    <span class="tag tw">⚠️ آمن على العمود</span>
+  </div>
+</div>
+
+<div class="nav">
+  <button class="nb active" onclick="show('week')">الأسبوع</button>
+  <button class="nb" onclick="show('gym')">الجيم</button>
+  <button class="nb" onclick="show('home')">البيت</button>
+  <button class="nb" onclick="show('posture')">الوضعية 🆕</button>
+  <button class="nb" onclick="show('daily')">يومي ✓</button>
+  <button class="nb" onclick="show('rules')">القواعد</button>
+</div>
+
+<!-- ══ الأسبوع ══ -->
+<section id="week" class="active">
+<div class="alert aw"><div style="font-size:18px;flex-shrink:0">🆕</div><p><strong>تحديثات جديدة:</strong> أضفنا تمارين استقامة الظهر وتعديل الأكتاف (Face Pull، Wall Slides، Thoracic Extension، Foam Roller) + تمارين تأهيل اللوح (External Rotation، Scapular Slides) + تمارين الرقبة.</p></div>
+<div class="sec-title">📅 الجدول الأسبوعي</div>
+<div class="week-grid">
+
+<!-- الأحد -->
+<div class="day-row home-day" onclick="td(this,'d0')">
+  <div class="day-badge">🏠</div>
+  <div class="day-info"><div class="day-name">الأحد</div><div class="day-type">بيت + مشي · بالليل</div></div>
+  <div class="day-time">دوام 7–4</div><div class="arr">▼</div>
+</div>
+<div class="day-detail" id="d0">
+  <div class="block-title">🌅 صباحاً</div>
+  <div class="ec"><div class="ech"><div class="en wn">🚶</div><div class="et"><h4>مشي 20–30 دقيقة</h4><small>إلزامي يومياً — وضعية صحيحة</small></div></div><div class="eb"><div class="edesc">رأس مرفوع، كتفين للخلف، نظر للأمام. لا تنظر للأسفل وأنت تمشي.</div><div class="erow"><span class="badge bg">عظام</span><span class="badge bc">التهاب</span></div></div></div>
+  <div class="block-title">🌙 بالليل — 25 دقيقة</div>
+  <div class="ec"><div class="ech"><div class="en hn">١</div><div class="et"><h4>Chin Tuck</h4><small>رقبة للأمام — يومي</small></div><div class="es">10 × 3</div></div><div class="eb"><div class="edesc">اسحب الذقن للخلف. لا تنزل الرأس. على الجدار أفضل.</div><div class="erow"><span class="badge bp">رقبة</span><a class="vb" href="https://www.youtube.com/results?search_query=Chin+Tuck+forward+head+posture+wall" target="_blank">▶ فيديو</a></div></div></div>
+  <div class="ec"><div class="ech"><div class="en hn">٢</div><div class="et"><h4>Bird Dog</h4><small>ثبات العمود — أولوية</small></div><div class="es">10 × 2 جهة</div></div><div class="eb"><div class="edesc">على أربع، ظهر مستقيم. يد ورجل عكس بعض. اثبت 3 ثواني.</div><div class="erow"><span class="badge bg">عضلات داعمة</span><a class="vb" href="https://www.youtube.com/results?search_query=Bird+Dog+exercise+spine+stability" target="_blank">▶ فيديو</a></div></div></div>
+  <div class="ec"><div class="ech"><div class="en hn">٣</div><div class="et"><h4>Dead Bug</h4><small>Core آمن</small></div><div class="es">10 × 2 جهة</div></div><div class="eb"><div class="edesc">على ظهرك، ركب 90°. أنزل يد ورجل عكس بعض ببطء. ظهرك على الأرض طوال الوقت.</div><div class="erow"><span class="badge bg">Core</span><a class="vb" href="https://www.youtube.com/results?search_query=Dead+Bug+exercise+back+pain+beginner" target="_blank">▶ فيديو</a></div></div></div>
+  <div class="ec"><div class="ech"><div class="en hn">٤</div><div class="et"><h4>Thoracic Extension على الكرسي 🆕</h4><small>لاستقامة الظهر</small></div><div class="es">10 × بطء</div></div><div class="eb"><div class="edesc">يديك خلف رأسك، انحنِ للخلف من الظهر الوسطى. حس الفتح في الصدر. لا تجهد الرقبة.</div><div class="erow"><span class="badge bp">استقامة + أكتاف</span><span class="badge bw">🆕</span><a class="vb" href="https://www.youtube.com/results?search_query=thoracic+extension+over+chair+kyphosis" target="_blank">▶ فيديو</a></div></div></div>
+</div>
+
+<!-- الاثنين - جيم -->
+<div class="day-row gym-day" onclick="td(this,'d1')">
+  <div class="day-badge">🏋</div>
+  <div class="day-info"><div class="day-name">الاثنين</div><div class="day-type">🏋 جيم — ظهر علوي + استقامة الظهر + كتف</div></div>
+  <div class="day-time">بعد 4م · 75–90 دق</div><div class="arr">▼</div>
+</div>
+<div class="day-detail" id="d1">
+  <div class="block-title">🔥 إحماء — 10 دقائق</div>
+  <div class="ec"><div class="ech"><div class="en gn">١</div><div class="et"><h4>Treadmill مشي سريع</h4><small>لا جري — مشي فقط</small></div><div class="es">10 دق</div></div><div class="eb"><div class="edesc">سرعة 5–6 كم/س. وضعية مستقيمة. لا تمسك اليد.</div></div></div>
+  <div class="block-title">💪 رئيسي — 55 دقيقة</div>
+  <div class="ec"><div class="ech"><div class="en gn">٢</div><div class="et"><h4>Face Pull ⭐</h4><small>أهم تمرين لاستقامة الظهر + اللوح</small></div><div class="es">15 × 4</div></div><div class="eb"><div class="edesc">اشد الكيبل لوجهك مع فتح الكوعين. شد لوحي الكتف للخلف والأسفل. يحسن استقامة الظهر مباشرة.</div><div class="erow"><span class="badge bp">استقامة + اللوح</span><span class="badge bw">⭐ أولوية</span><a class="vb" href="https://www.youtube.com/results?search_query=Face+Pull+posture+kyphosis+tutorial" target="_blank">▶ فيديو</a></div></div></div>
+  <div class="ec"><div class="ech"><div class="en gn">٣</div><div class="et"><h4>Seated Cable Row</h4><small>ظهر وسط + تقوية اللوح</small></div><div class="es">12 × 3</div></div><div class="eb"><div class="edesc">اجلس مستقيم، اشد الحبل لبطنك وشد لوحي الكتف للخلف. وزن خفيف إلى متوسط.</div><div class="erow"><span class="badge bc">ظهر وسط</span><a class="vb" href="https://www.youtube.com/results?search_query=Seated+Cable+Row+form+back+muscles" target="_blank">▶ فيديو</a></div></div></div>
+  <div class="ec"><div class="ech"><div class="en gn">٤</div><div class="et"><h4>Lat Pulldown — للأمام فقط</h4><small>لا تشده لخلف الرأس أبداً</small></div><div class="es">12 × 3</div></div><div class="eb"><div class="edesc">اشد البار لأعلى الصدر أمام الرأس. وزن خفيف. الظهر مستقيم قليلاً للخلف.</div><div class="erow"><span class="badge bc">ظهر علوي</span><span class="badge br">🚫 لا لخلف الرأس</span><a class="vb" href="https://www.youtube.com/results?search_query=Lat+Pulldown+front+vs+behind+neck" target="_blank">▶ فيديو</a></div></div></div>
+  <div class="ec"><div class="ech"><div class="en gn">٥</div><div class="et"><h4>Reverse Fly — دمبل أو جهاز</h4><small>كتف خلفي + وضعية</small></div><div class="es">12 × 3</div></div><div class="eb"><div class="edesc">انحنِ للأمام قليلاً، افتح الذراعين للجانب. حس الضغط بين لوحي الكتف. وزن خفيف جداً.</div><div class="erow"><span class="badge bp">كتف خلفي</span><a class="vb" href="https://www.youtube.com/results?search_query=Reverse+Fly+rear+delt+kyphosis" target="_blank">▶ فيديو</a></div></div></div>
+  <div class="ec"><div class="ech"><div class="en gn">٦</div><div class="et"><h4>Wall Slides 🆕</h4><small>استقامة الظهر + رقبة معاً</small></div><div class="es">10 × 3</div></div><div class="eb"><div class="edesc">رأس + كتفين + ردفين ملاصقين الجدار. ارفع يديك للأعلى ببطء. إذا انفصل ظهرك — وقف وابدأ من جديد.</div><div class="erow"><span class="badge bp">استقامة + رقبة</span><span class="badge bw">🆕</span><a class="vb" href="https://www.youtube.com/results?search_query=Wall+Slides+exercise+posture+thoracic" target="_blank">▶ فيديو</a></div></div></div>
+  <div class="block-title">🧊 تهدئة — 10 دقائق</div>
+  <div class="ec"><div class="ech"><div class="en gn">٧</div><div class="et"><h4>Doorway Chest Stretch 🆕</h4><small>يحسن استقامة الظهر مباشرة</small></div><div class="es">30 ث × 3</div></div><div class="eb"><div class="edesc">يديك على إطار الباب، تقدم للأمام. حس الشد في الصدر والكتف الأمامي.</div><div class="erow"><span class="badge bp">إطالة صدر</span><a class="vb" href="https://www.youtube.com/results?search_query=Doorway+chest+stretch+posture+kyphosis" target="_blank">▶ فيديو</a></div></div></div>
+</div>
+
+<!-- الثلاثاء -->
+<div class="day-row home-day" onclick="td(this,'d2')">
+  <div class="day-badge">🏠</div>
+  <div class="day-info"><div class="day-name">الثلاثاء</div><div class="day-type">استشفاء نشط + بيت · بالليل</div></div>
+  <div class="day-time">دوام 7–4</div><div class="arr">▼</div>
+</div>
+<div class="day-detail" id="d2">
+  <div class="block-title">🌙 بالليل — 20 دقيقة</div>
+  <div class="ec"><div class="ech"><div class="en hn">١</div><div class="et"><h4>McKenzie Extension</h4><small>راقب الرجل</small></div><div class="es">10 × بطء</div></div><div class="eb"><div class="edesc">على بطنك، ارفع الجزء العلوي على يديك. الحوض نازل. اثبت 3–5 ثواني. إذا زاد ألم الرجل — أوقف فوراً.</div><div class="erow"><span class="badge bg">ديسك</span><span class="badge br">🚫 راقب الرجل</span><a class="vb" href="https://www.youtube.com/results?search_query=McKenzie+Extension+disc+herniation+L4+L5" target="_blank">▶ فيديو</a></div></div></div>
+  <div class="ec"><div class="ech"><div class="en hn">٢</div><div class="et"><h4>Glute Bridge</h4><small>يريح أسفل الظهر</small></div><div class="es">15 × 3</div></div><div class="eb"><div class="edesc">على ظهرك، ركب مثنية. ارفع الحوض وشد المؤخرة. انزل ببطء.</div><div class="erow"><span class="badge bg">أسفل ظهر</span><a class="vb" href="https://www.youtube.com/results?search_query=Glute+Bridge+lower+back+disc" target="_blank">▶ فيديو</a></div></div></div>
+  <div class="ec"><div class="ech"><div class="en hn">٣</div><div class="et"><h4>Hip Flexor Stretch</h4><small>يفتح الحوض</small></div><div class="es">30 ث × 2 جهة</div></div><div class="eb"><div class="edesc">ركبة على الأرض، الأخرى أمامك. ادفع الحوض للأمام حتى تحس شداً أمام الفخذ الخلفي.</div><div class="erow"><span class="badge bg">إطالة</span><a class="vb" href="https://www.youtube.com/results?search_query=Hip+Flexor+Stretch+kneeling+back+pain" target="_blank">▶ فيديو</a></div></div></div>
+  <div class="ec"><div class="ech"><div class="en hn">٤</div><div class="et"><h4>Chin Tuck على الجدار 🆕</h4><small>يومي — رقبة</small></div><div class="es">10 × 3</div></div><div class="eb"><div class="edesc">ظهرك الكامل على الجدار. اسحب الذقن للخلف حتى يلامس مؤخرة رأسك الجدار. اثبت 5 ثواني.</div><div class="erow"><span class="badge bp">رقبة</span></div></div></div>
+</div>
+
+<!-- الأربعاء - جيم -->
+<div class="day-row gym-day" onclick="td(this,'d3')">
+  <div class="day-badge">🏋</div>
+  <div class="day-info"><div class="day-name">الأربعاء</div><div class="day-type">🏋 جيم — Core + أسفل ظهر آمن</div></div>
+  <div class="day-time">بعد 4م · 75–90 دق</div><div class="arr">▼</div>
+</div>
+<div class="day-detail" id="d3">
+  <div class="block-title">🔥 إحماء — 10 دقائق</div>
+  <div class="ec"><div class="ech"><div class="en gn">١</div><div class="et"><h4>Stationary Bike</h4><small>أفضل من التريدميل لأسفل الظهر</small></div><div class="es">10 دق</div></div><div class="eb"><div class="edesc">كثافة خفيفة. ظهر مستقيم. لا تنحنِ على الدراجة.</div></div></div>
+  <div class="block-title">💪 رئيسي — 55 دقيقة</div>
+  <div class="ec"><div class="ech"><div class="en gn">٢</div><div class="et"><h4>Cable Pull Through</h4><small>بديل آمن للـ Deadlift</small></div><div class="es">12 × 3</div></div><div class="eb"><div class="edesc">الكيبل بين رجليك من الخلف. انحنِ بالحوض فقط ثم ارجع وشد المؤخرة. ظهرك مستقيم طوال الوقت.</div><div class="erow"><span class="badge bc">ظهر آمن</span><span class="badge bg">مؤخرة</span><a class="vb" href="https://www.youtube.com/results?search_query=Cable+Pull+Through+deadlift+alternative+back+pain" target="_blank">▶ فيديو</a></div></div></div>
+  <div class="ec"><div class="ech"><div class="en gn">٣</div><div class="et"><h4>Back Extension خفيف</h4><small>أسفل ظهر — بدون أوزان</small></div><div class="es">12 × 3</div></div><div class="eb"><div class="edesc">انحنِ ببطء ثم ارجع لخط مستقيم فقط. لا تمد للخلف أكثر من مستوى الجسم.</div><div class="erow"><span class="badge bc">أسفل ظهر</span><span class="badge bw">بدون أوزان</span><a class="vb" href="https://www.youtube.com/results?search_query=Back+Extension+machine+bodyweight+disc" target="_blank">▶ فيديو</a></div></div></div>
+  <div class="ec"><div class="ech"><div class="en gn">٤</div><div class="et"><h4>Plank</h4><small>Core</small></div><div class="es">40 ث × 3</div></div><div class="eb"><div class="edesc">من وضع الساعدين. جسم مستقيم. تنفس طبيعي. لا ترفع الحوض كثير.</div><div class="erow"><span class="badge bg">Core</span><a class="vb" href="https://www.youtube.com/results?search_query=Plank+proper+form+back+pain+safe" target="_blank">▶ فيديو</a></div></div></div>
+  <div class="ec"><div class="ech"><div class="en gn">٥</div><div class="et"><h4>Hanging Decompression 🆕</h4><small>يفتح الفضاء على L4-L5</small></div><div class="es">30 ث × 3</div></div><div class="eb"><div class="edesc">تعلق على البار بيديك فقط. اترك الجاذبية تمد ظهرك. إذا في جهاز Traction في الجيم — أفضل منه.</div><div class="erow"><span class="badge bw">🆕 عصب L5</span><a class="vb" href="https://www.youtube.com/results?search_query=Hanging+bar+spinal+decompression+disc" target="_blank">▶ فيديو</a></div></div></div>
+  <div class="ec"><div class="ech"><div class="en gn">٦</div><div class="et"><h4>Seated Shoulder Press خفيف</h4><small>أكتاف متوازنة</small></div><div class="es">12 × 3</div></div><div class="eb"><div class="edesc">اجلس مستقيم. دمابل خفيفة. ارفع للأعلى بدون قوس في الظهر.</div><div class="erow"><span class="badge bc">أكتاف</span><span class="badge bw">خفيف جداً</span><a class="vb" href="https://www.youtube.com/results?search_query=Seated+Dumbbell+Shoulder+Press+form+back+pain" target="_blank">▶ فيديو</a></div></div></div>
+  <div class="block-title">🧊 تهدئة — 10 دقائق</div>
+  <div class="ec"><div class="ech"><div class="en gn">٧</div><div class="et"><h4>Cat-Cow</h4><small>إطالة وتنشيط العمود</small></div><div class="es">10 × بطء</div></div><div class="eb"><div class="edesc">على أربع، تناوب بين تقوس الظهر للأعلى والأسفل مع التنفس ببطء.</div><div class="erow"><span class="badge bg">إطالة</span><a class="vb" href="https://www.youtube.com/results?search_query=Cat+Cow+stretch+spine+mobility+back+pain" target="_blank">▶ فيديو</a></div></div></div>
+</div>
+
+<!-- الخميس -->
+<div class="day-row home-day" onclick="td(this,'d4')">
+  <div class="day-badge">🏠</div>
+  <div class="day-info"><div class="day-name">الخميس</div><div class="day-type">استشفاء + Core بيت · بالليل</div></div>
+  <div class="day-time">دوام 7–4</div><div class="arr">▼</div>
+</div>
+<div class="day-detail" id="d4">
+  <div class="block-title">🌙 بالليل — 20 دقيقة</div>
+  <div class="ec"><div class="ech"><div class="en hn">١</div><div class="et"><h4>Dead Bug</h4><small>Core</small></div><div class="es">10 × 2 جهة</div></div><div class="eb"><div class="edesc">على ظهرك، ركب 90°. أنزل يد ورجل عكس بعض ببطء.</div><div class="erow"><span class="badge bg">Core</span></div></div></div>
+  <div class="ec"><div class="ech"><div class="en hn">٢</div><div class="et"><h4>Plank</h4><small>Core</small></div><div class="es">30 ث × 3</div></div><div class="eb"><div class="edesc">من وضع الساعدين. جسم مستقيم.</div><div class="erow"><span class="badge bg">Core</span></div></div></div>
+  <div class="ec"><div class="ech"><div class="en hn">٣</div><div class="et"><h4>Chin Tuck على الجدار</h4><small>رقبة يومي</small></div><div class="es">10 × 3</div></div><div class="eb"><div class="edesc">ظهرك الكامل على الجدار. الذقن للخلف حتى تلامس مؤخرة رأسك الجدار. 5 ثواني.</div><div class="erow"><span class="badge bp">رقبة</span></div></div></div>
+  <div class="ec"><div class="ech"><div class="en hn">٤</div><div class="et"><h4>Thoracic Extension على الكرسي 🆕</h4><small>استقامة الظهر</small></div><div class="es">10 × بطء</div></div><div class="eb"><div class="edesc">يديك خلف رأسك، انحنِ للخلف من الظهر الوسطى. حس الفتح في الصدر.</div><div class="erow"><span class="badge bp">استقامة + أكتاف</span></div></div></div>
+</div>
+
+<!-- الجمعة -->
+<div class="day-row rest-day" onclick="td(this,'d5')">
+  <div class="day-badge">😴</div>
+  <div class="day-info"><div class="day-name">الجمعة</div><div class="day-type">راحة — لا جيم · مشي خفيف فقط</div></div>
+  <div class="day-time">إجازة</div><div class="arr">▼</div>
+</div>
+<div class="day-detail" id="d5">
+  <div class="block-title">☀️ فعاليات الجمعة</div>
+  <div class="ec"><div class="ech"><div class="en wn">١</div><div class="et"><h4>مشي 20–30 دقيقة</h4><small>حتى أيام الراحة</small></div></div><div class="eb"><div class="edesc">بوضعية صحيحة. جسمك يبني العضل أيام الراحة.</div><div class="erow"><span class="badge bg">استشفاء</span></div></div></div>
+  <div class="ec"><div class="ech"><div class="en wn">٢</div><div class="et"><h4>إطالات + تنفس عميق</h4><small>10 دقائق</small></div></div><div class="eb"><div class="edesc">Cat-Cow + Child's Pose + تنفس عميق من البطن.</div><div class="erow"><span class="badge bg">استرخاء</span></div></div></div>
+</div>
+
+<!-- السبت - جيم -->
+<div class="day-row gym-day" onclick="td(this,'d6')">
+  <div class="day-badge">🏋</div>
+  <div class="day-info"><div class="day-name">السبت</div><div class="day-type">🏋 جيم — أكتاف + لوح + رقبة · إجازة</div></div>
+  <div class="day-time">إجازة — أي وقت</div><div class="arr">▼</div>
+</div>
+<div class="day-detail" id="d6">
+  <div class="block-title">🔥 إحماء — 10 دقائق</div>
+  <div class="ec"><div class="ech"><div class="en gn">١</div><div class="et"><h4>Rowing Machine</h4><small>إحماء ممتاز للظهر والقلب</small></div><div class="es">10 دق</div></div><div class="eb"><div class="edesc">كثافة خفيفة. ظهر مستقيم. لا تنحنِ بالظهر.</div></div></div>
+  <div class="block-title">💪 رئيسي — 60 دقيقة</div>
+  <div class="ec"><div class="ech"><div class="en gn">٢</div><div class="et"><h4>Face Pull ⭐</h4><small>أول شيء كل سبت</small></div><div class="es">15 × 4</div></div><div class="eb"><div class="edesc">اشد الكيبل لوجهك مع فتح الكوعين. شد لوحي الكتف. في كل جلسة جيم بدون استثناء.</div><div class="erow"><span class="badge bp">استقامة + اللوح</span><a class="vb" href="https://www.youtube.com/results?search_query=Face+Pull+technique+posture+rotator+cuff" target="_blank">▶ فيديو</a></div></div></div>
+  <div class="ec"><div class="ech"><div class="en gn">٣</div><div class="et"><h4>External Rotation بالـ Band 🆕</h4><small>تأهيل اللوح</small></div><div class="es">15 × 3</div></div><div class="eb"><div class="edesc">كوعك ملاصق لجنبك. دوّر الساعد للخارج ضد مقاومة البند. وزن صفر — مقاومة خفيفة فقط. هذا تأهيل للإصابة القديمة.</div><div class="erow"><span class="badge bp">تأهيل اللوح</span><span class="badge bw">🆕</span><a class="vb" href="https://www.youtube.com/results?search_query=External+Rotation+band+rotator+cuff+rehab" target="_blank">▶ فيديو</a></div></div></div>
+  <div class="ec"><div class="ech"><div class="en gn">٤</div><div class="et"><h4>Scapular Wall Slides 🆕</h4><small>تحريك اللوح بأمان</small></div><div class="es">10 × 3</div></div><div class="eb"><div class="edesc">نفس Wall Slides لكن ركز على تحريك لوح الكتف. إذا حسيت طقطقة — خفف النطاق.</div><div class="erow"><span class="badge bp">اللوح</span><span class="badge bw">🆕</span><a class="vb" href="https://www.youtube.com/results?search_query=Scapular+Wall+Slides+shoulder+blade+rehab" target="_blank">▶ فيديو</a></div></div></div>
+  <div class="ec"><div class="ech"><div class="en gn">٥</div><div class="et"><h4>Incline Dumbbell Press خفيف</h4><small>صدر علوي — لفتح الصدر</small></div><div class="es">12 × 3</div></div><div class="eb"><div class="edesc">زاوية 30–45 درجة فقط. وزن خفيف جداً. الهدف فتح الصدر وتوازن العضلات.</div><div class="erow"><span class="badge bc">صدر</span><span class="badge bw">خفيف جداً</span><a class="vb" href="https://www.youtube.com/results?search_query=Incline+Dumbbell+Press+light+posture+balance" target="_blank">▶ فيديو</a></div></div></div>
+  <div class="ec"><div class="ech"><div class="en gn">٦</div><div class="et"><h4>Neck Retraction + Extension 🆕</h4><small>للرقبة في الجيم</small></div><div class="es">10 × 3</div></div><div class="eb"><div class="edesc">اجلس مستقيم. اسحب الذقن للخلف (Chin Tuck) ثم انظر للسقف ببطء. ارجع ببطء. بدون أوزان.</div><div class="erow"><span class="badge bp">رقبة</span><span class="badge bw">🆕</span><a class="vb" href="https://www.youtube.com/results?search_query=Neck+Retraction+Extension+forward+head+posture+cervical" target="_blank">▶ فيديو</a></div></div></div>
+  <div class="block-title">🧊 تهدئة — 10 دقائق</div>
+  <div class="ec"><div class="ech"><div class="en gn">٧</div><div class="et"><h4>Foam Roller ظهر علوي 🆕</h4><small>لاستقامة الظهر</small></div><div class="es">2 دقيقة</div></div><div class="eb"><div class="edesc">ضع الـ Foam Roller تحت الظهر الوسطى. يديك خلف رأسك. دع الجاذبية تفتح الظهر. لا تضغط على أسفل الظهر.</div><div class="erow"><span class="badge bp">استقامة + أكتاف</span><a class="vb" href="https://www.youtube.com/results?search_query=Foam+Roller+thoracic+spine+kyphosis+extension" target="_blank">▶ فيديو</a></div></div></div>
+</div>
+
+</div><!-- week-grid -->
+</section>
+
+<!-- ══ الجيم ══ -->
+<section id="gym">
+<div class="sec-title">🏋 ملخص الجيم</div>
+<div class="alert aw"><div style="font-size:18px;flex-shrink:0">📌</div><p><strong>القاعدة:</strong> وزن خفيف + تقنية صحيحة. الهدف تأهيل وتصحيح — مو بناء ثقيل.</p></div>
+<div class="tip-card"><h4 style="color:var(--home)">✅ مسموح</h4><ul class="tlist"><li>Face Pull — في كل جلسة بدون استثناء</li><li>Seated Cable Row — ظهر وسط</li><li>Lat Pulldown للأمام فقط</li><li>Reverse Fly — كتف خلفي</li><li>Wall Slides + Scapular Slides</li><li>Cable Pull Through — بديل Deadlift</li><li>Back Extension بدون أوزان</li><li>Hanging Decompression</li><li>External Rotation بالبند — لوح</li><li>Incline Press خفيف</li><li>Seated Shoulder Press خفيف</li></ul></div>
+<div class="tip-card"><h4 style="color:var(--danger)">🚫 ممنوع</h4><ul class="tlist"><li class="dt">Deadlift ثقيل</li><li class="dt">Squat بأوزان ثقيلة</li><li class="dt">Lat Pulldown لخلف الرأس</li><li class="dt">Sit-ups وCrunches</li><li class="dt">لف الظهر مع أثقال</li><li class="dt">Overhead Press ثقيل</li><li class="dt">HIIT والجري حالياً</li></ul></div>
+</section>
+
+<!-- ══ البيت ══ -->
+<section id="home">
+<div class="sec-title">🏠 تمارين البيت — يومياً بالليل</div>
+<div class="alert aw"><div style="font-size:16px;flex-shrink:0">⏰</div><p>20–25 دقيقة. بعد أيام الجيم تقدر تخفف العدد 30%.</p></div>
+<div class="ec"><div class="ech"><div class="en hn">١</div><div class="et"><h4>Chin Tuck</h4><small>يومي — رقبة</small></div><div class="es">10 × 3</div></div><div class="eb"><div class="edesc">الذقن للخلف بلطف. على الجدار أفضل. يومي حتى أيام الراحة.</div><div class="erow"><span class="badge bp">رقبة يومي</span><a class="vb" href="https://www.youtube.com/results?search_query=Chin+Tuck+wall+forward+head+daily" target="_blank">▶ فيديو</a></div></div></div>
+<div class="ec"><div class="ech"><div class="en hn">٢</div><div class="et"><h4>Bird Dog</h4><small>يومي</small></div><div class="es">10 × 2 جهة</div></div><div class="eb"><div class="edesc">على أربع. يد ورجل عكس بعض. اثبت 3 ثواني.</div><div class="erow"><span class="badge bg">عمود فقري</span></div></div></div>
+<div class="ec"><div class="ech"><div class="en hn">٣</div><div class="et"><h4>Dead Bug</h4><small>يومي</small></div><div class="es">10 × 2 جهة</div></div><div class="eb"><div class="edesc">ركب 90°. يد ورجل عكس بعض ببطء. ظهرك على الأرض.</div><div class="erow"><span class="badge bg">Core</span></div></div></div>
+<div class="ec"><div class="ech"><div class="en hn">٤</div><div class="et"><h4>Glute Bridge</h4><small>يومي</small></div><div class="es">15 × 3</div></div><div class="eb"><div class="edesc">ارفع الحوض وشد المؤخرة. انزل ببطء.</div><div class="erow"><span class="badge bg">أسفل ظهر</span></div></div></div>
+<div class="ec"><div class="ech"><div class="en hn">٥</div><div class="et"><h4>Thoracic Extension على الكرسي 🆕</h4><small>لاستقامة الظهر — يومي</small></div><div class="es">10 × بطء</div></div><div class="eb"><div class="edesc">يديك خلف رأسك. انحنِ للخلف من الظهر الوسطى. حس الفتح في الصدر.</div><div class="erow"><span class="badge bp">استقامة + أكتاف</span><span class="badge bw">🆕</span><a class="vb" href="https://www.youtube.com/results?search_query=thoracic+extension+chair+kyphosis+posture" target="_blank">▶ فيديو</a></div></div></div>
+<div class="ec"><div class="ech"><div class="en hn">٦</div><div class="et"><h4>McKenzie Extension</h4><small>أيام البيت فقط — لا بعد الجيم</small></div><div class="es">10 × بطء</div></div><div class="eb"><div class="edesc">على بطنك، ارفع الجزء العلوي. الحوض نازل. راقب الرجل.</div><div class="erow"><span class="badge bg">ديسك</span><span class="badge br">🚫 راقب الرجل</span></div></div></div>
+</section>
+
+<!-- ══ الوضعية ══ -->
+<section id="posture">
+<div class="sec-title">🧍 تصحيح الوضعية 🆕</div>
+<div class="alert aw"><div style="font-size:16px;flex-shrink:0">💡</div><p>استقامة الظهر + رقبة للأمام + تحسين اللوح — هذه الثلاثة مترابطة وتحتاج عناية يومية فوق التمارين.</p></div>
+<div class="pos-grid">
+  <div class="pc"><h4>🖥️ الشاشة والمكتب</h4><p>الشاشة على مستوى العينين. المسافة ذراع واحد. الكتفين للخلف والأسفل — لا للأمام. الكوع بزاوية 90°.</p></div>
+  <div class="pc"><h4>💺 وضعية الجلوس</h4><p>دعم أسفل الظهر دائماً. الركبتين على مستوى الوركين. القدمين على الأرض. ظهرك مستند — مو معلق.</p></div>
+  <div class="pc pur"><h4>📱 الموبايل — مهم جداً</h4><p>ارفع الموبايل لمستوى عينيك. كل 10 سم تنزل فيها رأسك = 5 كغ ضغط إضافي على الرقبة واستقامة الظهر.</p></div>
+  <div class="pc"><h4>🚶 وضعية المشي</h4><p>رأس مرفوع، نظر للأمام، كتفين للخلف. المشي الصحيح يحسن الاستقامة تدريجياً.</p></div>
+  <div class="pc wc"><h4>😴 وضعية النوم</h4><p>على الجنب الأيمن مع وسادة بين الركبتين. أو على الظهر مع وسادة تحت الركبتين. لا على البطن أبداً.</p></div>
+  <div class="pc dc"><h4>⏰ قاعدة الـ 30 دقيقة</h4><p>قم وتحرك كل 30–45 دقيقة. الجلوس المطول أكبر عدو لحالتك كلها — الديسك واستقامة الظهر والرقبة.</p></div>
+  <div class="pc pur"><h4>💊 مكملات يومية</h4><p>يجب الاهتمام بـ فيتامين D + مغنيسيوم 300-400mg ليلاً + فيتامين B12 1000mcg.</p></div>
+</div>
+</section>
+
+<!-- ══ يومي ══ -->
+<section id="daily">
+<div class="sec-title">✅ قائمة اليوم</div>
+<div class="pw"><div class="pl"><span>تقدمك اليوم</span><span id="pct">0%</span></div><div class="pb-bg"><div class="pb" id="pbar"></div></div></div>
+<div class="cl" id="cl">
+  <div class="ci" onclick="tick(this)"><div class="cb"></div><div class="ct">🚶 مشيت 20–30 دقيقة بوضعية صحيحة</div></div>
+  <div class="ci" onclick="tick(this)"><div class="cb"></div><div class="ct">🙇 Chin Tuck على الجدار — 10 × 3</div></div>
+  <div class="ci" onclick="tick(this)"><div class="cb"></div><div class="ct">🐦 Bird Dog — 10 لكل جهة</div></div>
+  <div class="ci" onclick="tick(this)"><div class="cb"></div><div class="ct">🪲 Dead Bug — 10 لكل جهة</div></div>
+  <div class="ci" onclick="tick(this)"><div class="cb"></div><div class="ct">🍑 Glute Bridge — 15 × 3</div></div>
+  <div class="ci" onclick="tick(this)"><div class="cb"></div><div class="ct">🪑 Thoracic Extension على الكرسي — 10×</div></div>
+  <div class="ci" onclick="tick(this)"><div class="cb"></div><div class="ct">⏰ قمت كل 30–45 دقيقة من الجلسة</div></div>
+  <div class="ci" onclick="tick(this)"><div class="cb"></div><div class="ct">📱 رفعت الموبايل لمستوى عيني</div></div>
+  <div class="ci" onclick="tick(this)"><div class="cb"></div><div class="ct">💊 أخذت فيتامين D + مغنيسيوم + B12</div></div>
+  <div class="ci gci" onclick="tick(this)"><div class="cb"></div><div class="ct">🏋 روحت الجيم (الاثنين أو الأربعاء أو السبت)</div></div>
+</div>
+</section>
+
+<!-- ══ القواعد ══ -->
+<section id="rules">
+<div class="sec-title">📋 القواعد الكاملة</div>
+<div class="alert aw"><div style="font-size:18px;flex-shrink:0">⚠️</div><p><strong>أوقف فوراً</strong> إذا زاد ألم الرجل أو حسيت خدر أو ضعف.</p></div>
+<div class="tip-card"><h4>🏋 في الجيم</h4><ul class="tlist"><li>Face Pull في كل جلسة بدون استثناء</li><li>وزن خفيف — التقنية أهم من الثقل</li><li>لا Lat Pulldown لخلف الرأس أبداً</li><li>إذا حسيت طقطقة باللوح — خفف النطاق</li></ul></div>
+<div class="tip-card"><h4>🏠 في البيت</h4><ul class="tlist"><li>Chin Tuck يومي — حتى أيام الراحة</li><li>Thoracic Extension — يومي لاستقامة الظهر</li><li>McKenzie — أيام البيت فقط، راقب الرجل</li></ul></div>
+<div class="tip-card"><h4 style="color:var(--danger)">🚫 ممنوع تماماً</h4><ul class="tlist"><li class="dt">Deadlift وSquat ثقيل</li><li class="dt">Sit-ups وCrunches</li><li class="dt">لف الظهر مع أثقال</li><li class="dt">الجري والقفز وHIIT</li><li class="dt">النوم على البطن</li><li class="dt">النظر للأسفل لفترات طويلة</li></ul></div>
+</section>
+
+<script>
+function show(id){
+  document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+function td(row,id){
+  row.classList.toggle('open');
+  document.getElementById(id).classList.toggle('visible');
+}
+function tick(item){
+  item.classList.toggle('done');
+  item.querySelector('.cb').textContent=item.classList.contains('done')?'✓':'';
+  const total=document.querySelectorAll('.ci').length;
+  const done=document.querySelectorAll('.ci.done').length;
+  const p=Math.round(done/total*100);
+  document.getElementById('pbar').style.width=p+'%';
+  document.getElementById('pct').textContent=p+'%';
+}
+// today highlight
+const jsDay=new Date().getDay();
+const rows=document.querySelectorAll('.day-row');
+const order=[0,1,2,3,4,5,6]; // Sun=0
+if(rows[jsDay]){
+  rows[jsDay].classList.add('today');
+  const pill=document.createElement('span');
+  pill.className='today-pill';pill.textContent='اليوم';
+  rows[jsDay].querySelector('.day-name').appendChild(pill);
+}
+</script>
+</body>
+</html>
