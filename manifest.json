@@ -1,19 +1,14 @@
 {
-  "name": "شروق وغروب الدوحة",
-  "short_name": "شروق الدوحة",
+  "name": "Customised App - أحمد المحاميد",
+  "short_name": "أحمد App",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#f8fafc",
-  "theme_color": "#0f766e",
+  "background_color": "#020617",
+  "theme_color": "#0f172a",
   "orientation": "portrait",
   "lang": "ar",
   "dir": "rtl",
   "icons": [
-    {
-      "src": "icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    }
+    {"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
   ]
 }
