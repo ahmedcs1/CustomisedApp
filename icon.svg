@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#0f766e"/>
+  <circle cx="256" cy="230" r="92" fill="#facc15"/>
+  <path d="M90 338h332" stroke="#ffffff" stroke-width="34" stroke-linecap="round"/>
+  <path d="M130 390h252" stroke="#ccfbf1" stroke-width="26" stroke-linecap="round"/>
+  <text x="256" y="470" text-anchor="middle" font-family="Arial" font-size="54" font-weight="700" fill="#ffffff">Doha</text>
+</svg>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0f766e" />
+  <title>شروق وغروب الدوحة</title>
+
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Tahoma, sans-serif;
+      background: linear-gradient(180deg, #ecfeff, #f8fafc);
+      color: #1f2937;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 18px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.95);
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: 0 12px 35px rgba(15, 118, 110, 0.16);
+      border: 1px solid #e5e7eb;
+    }
+
+    .top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .badge {
+      background: #ccfbf1;
+      color: #115e59;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-weight: bold;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 25px;
+      line-height: 1.4;
+    }
+
+    .sub {
+      color: #64748b;
+      margin: 6px 0 18px;
+      font-size: 15px;
+    }
+
+    .clock {
+      text-align: center;
+      padding: 18px;
+      border-radius: 22px;
+      background: #f0fdfa;
+      margin-bottom: 18px;
+    }
+
+    .clock-time {
+      font-size: 42px;
+      font-weight: 800;
+      color: #0f766e;
+      letter-spacing: 1px;
+    }
+
+    .clock-date {
+      margin-top: 8px;
+      color: #475569;
+      font-size: 16px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 14px;
+      border-radius: 16px;
+      background: #f8fafc;
+      border: 1px solid #eef2f7;
+    }
+
+    .label {
+      font-weight: bold;
+      color: #334155;
+    }
+
+    .value {
+      color: #0f172a;
+      font-weight: 700;
+      text-align: left;
+      direction: ltr;
+    }
+
+    .section-title {
+      margin: 20px 0 10px;
+      font-weight: 800;
+      color: #0f766e;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 18px;
+      color: #64748b;
+      font-size: 13px;
+    }
+
+    button {
+      width: 100%;
+      border: none;
+      border-radius: 16px;
+      padding: 14px;
+      margin-top: 16px;
+      background: #0f766e;
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+      display: none;
+    }
+
+    button:active { transform: scale(0.99); }
+
+    @media (max-width: 480px) {
+      .page { padding: 12px; }
+      .card { padding: 16px; border-radius: 20px; }
+      h1 { font-size: 21px; }
+      .clock-time { font-size: 36px; }
+      .row { font-size: 15px; padding: 12px; }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+    <section class="card">
+      <div class="top">
+        <div>
+          <h1>أوقات الشروق والغروب في الدوحة</h1>
+          <div class="sub">تحديث مباشر حسب توقيت قطر</div>
+        </div>
+        <div class="badge">Qatar UTC+3</div>
+      </div>
+
+      <div class="clock">
+        <div class="clock-time" id="currentTime">--:--:--</div>
+        <div class="clock-date" id="currentDate">--</div>
+      </div>
+
+      <div class="section-title">اليوم</div>
+      <div class="grid">
+        <div class="row"><div class="label">شروق الشمس</div><div class="value" id="sunriseToday">--</div></div>
+        <div class="row"><div class="label">غروب الشمس</div><div class="value" id="sunsetToday">--</div></div>
+        <div class="row"><div class="label">مدة النهار</div><div class="value" id="dayLengthToday">--</div></div>
+      </div>
+
+      <div class="section-title">غداً</div>
+      <div class="grid">
+        <div class="row"><div class="label">شروق الشمس</div><div class="value" id="sunriseTomorrow">--</div></div>
+        <div class="row"><div class="label">غروب الشمس</div><div class="value" id="sunsetTomorrow">--</div></div>
+        <div class="row"><div class="label">مدة النهار</div><div class="value" id="dayLengthTomorrow">--</div></div>
+      </div>
+
+      <div class="section-title">الموقع</div>
+      <div class="grid">
+        <div class="row"><div class="label">خط العرض</div><div class="value">25.2854</div></div>
+        <div class="row"><div class="label">خط الطول</div><div class="value">51.5310</div></div>
+      </div>
+
+      <button id="installButton">تثبيت التطبيق على الشاشة</button>
+
+      <div class="footer">
+        يعمل كتطبيق PWA ويمكن تعديل الكود بأي وقت
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
