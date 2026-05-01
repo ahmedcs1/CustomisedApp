@@ -64,3 +64,147 @@ addDuaBtn.onclick=()=>{let title=duaTitle.value.trim()||"دعاء جديد",cate
 duaSearch.oninput=renderDuas;
 async function refreshAll(){cityPill.textContent=selectedCity.label;updateClockSun();updateQibla();await Promise.all([loadPrayer(),loadWeather()])}
 initTabs();initCity();initSettings();applyDark();updateAlertUI();renderAdhkar();renderDuas();refreshAll();setInterval(updateClockSun,1000);setInterval(loadWeather,20*60*1000);setInterval(loadPrayer,60*60*1000);
+
+
+
+/* ===== Trip / Location Weather Check V6 ===== */
+function tripWeatherCodeToArabic(code){
+  return ({
+    0:"سماء صافية",1:"غالباً صافي",2:"غائم جزئياً",3:"غائم",
+    45:"ضباب",48:"ضباب كثيف",51:"رذاذ خفيف",53:"رذاذ متوسط",55:"رذاذ كثيف",
+    61:"مطر خفيف",63:"مطر متوسط",65:"مطر غزير",
+    80:"زخات خفيفة",81:"زخات متوسطة",82:"زخات قوية",
+    95:"عواصف رعدية",96:"عواصف مع برد خفيف",99:"عواصف مع برد قوي"
+  })[Number(code)] || "حالة طقس غير معروفة";
+}
+
+function buildTripDecision(weather){
+  const temp = Number(weather.temperature_2m || 0);
+  const apparent = Number(weather.apparent_temperature || temp);
+  const wind = Number(weather.wind_speed_10m || 0);
+  const gusts = Number(weather.wind_gusts_10m || 0);
+  const humidity = Number(weather.relative_humidity_2m || 0);
+  const rain = Number(weather.precipitation || 0);
+  const code = Number(weather.weather_code || 0);
+
+  let score = 100;
+  let reasons = [];
+
+  if (rain > 0 || [61,63,65,80,81,82,95,96,99].includes(code)) {
+    score -= 35;
+    reasons.push("في احتمال مطر أو زخات، وهذا قد يزعج الرحلة والشوي.");
+  }
+
+  if (wind >= 35 || gusts >= 45) {
+    score -= 35;
+    reasons.push("الرياح قوية وقد تكون مزعجة للشوي أو الجلسة الخارجية.");
+  } else if (wind >= 22 || gusts >= 32) {
+    score -= 18;
+    reasons.push("الرياح متوسطة إلى قوية، اختَر مكان محمي وانتبه للنار.");
+  }
+
+  if (apparent >= 39) {
+    score -= 30;
+    reasons.push("الإحساس بالحرارة عالي جدًا، الأفضل تجنب وقت الظهيرة.");
+  } else if (apparent >= 34) {
+    score -= 16;
+    reasons.push("الجو حار نسبيًا، الأفضل الخروج بعد العصر أو المغرب.");
+  }
+
+  if (humidity >= 75 && apparent >= 32) {
+    score -= 14;
+    reasons.push("الرطوبة عالية مع حرارة، الجلسة قد تكون متعبة.");
+  }
+
+  if (temp < 10) {
+    score -= 10;
+    reasons.push("الجو بارد نسبيًا، خذ احتياطك بالملابس.");
+  }
+
+  if (reasons.length === 0) {
+    reasons.push("الجو مناسب عمومًا للرحلات والجلسات الخارجية.");
+  }
+
+  if (score >= 75) return {className:"trip-ok", title:"✅ مناسب للرحلة والشوي", score, reasons};
+  if (score >= 50) return {className:"trip-mid", title:"⚠️ مناسب لكن مع احتياط", score, reasons};
+  return {className:"trip-bad", title:"❌ غير مناسب حاليًا", score, reasons};
+}
+
+async function searchTripLocation(){
+  const input = document.getElementById("tripSearchInput");
+  const results = document.getElementById("tripResults");
+  if(!input || !results) return;
+
+  const query = input.value.trim();
+  if(!query){
+    alert("اكتب اسم المكان أولاً");
+    return;
+  }
+
+  results.innerHTML = `<div class="dua-card"><div class="dua-title">جاري البحث...</div><div class="dua-text">نبحث عن الموقع ونفحص الطقس الآن.</div></div>`;
+
+  try{
+    const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=5&language=ar&format=json`;
+    const geoRes = await fetch(geoUrl);
+    const geoData = await geoRes.json();
+
+    if(!geoData.results || geoData.results.length === 0){
+      results.innerHTML = `<div class="dua-card trip-bad"><div class="dua-title">لم يتم العثور على الموقع</div><div class="dua-text">جرّب كتابة الاسم بالإنجليزي أو أضف الدولة، مثال: Sealine Qatar أو Dukhan Qatar.</div></div>`;
+      return;
+    }
+
+    const cards = [];
+    for (const place of geoData.results.slice(0,3)){
+      const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${place.latitude}&longitude=${place.longitude}&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,wind_gusts_10m,precipitation&timezone=auto`;
+      const wRes = await fetch(weatherUrl);
+      const wData = await wRes.json();
+      const w = wData.current;
+      const decision = buildTripDecision(w);
+      const safeName = String(place.name || "").replace(/'/g,"\\'");
+      const placeName = `${place.name || ""}${place.admin1 ? " - " + place.admin1 : ""}${place.country ? " - " + place.country : ""}`;
+
+      cards.push(`
+        <div class="dua-card ${decision.className}">
+          <div class="trip-decision">${decision.title}</div>
+          <div class="dua-title">${placeName}</div>
+          <div class="mini-grid">
+            <div class="mini"><div>الحرارة</div><div>${toEnglish(Math.round(w.temperature_2m))}°C</div></div>
+            <div class="mini"><div>الإحساس</div><div>${toEnglish(Math.round(w.apparent_temperature))}°C</div></div>
+            <div class="mini"><div>الرطوبة</div><div>${toEnglish(w.relative_humidity_2m)}%</div></div>
+            <div class="mini"><div>الرياح</div><div>${toEnglish(Math.round(w.wind_speed_10m))} كم/س</div></div>
+            <div class="mini"><div>الهبات</div><div>${toEnglish(Math.round(w.wind_gusts_10m || 0))} كم/س</div></div>
+            <div class="mini"><div>المطر</div><div>${toEnglish(w.precipitation || 0)} mm</div></div>
+          </div>
+          <div class="dua-text" style="margin-top:10px">
+            <strong>الحالة:</strong> ${tripWeatherCodeToArabic(w.weather_code)}<br>
+            <strong>التقييم:</strong> ${toEnglish(Math.max(0, Math.round(decision.score)))} / 100<br>
+            <strong>الملاحظات:</strong><br>
+            ${decision.reasons.map(r => "• " + r).join("<br>")}
+          </div>
+          <div class="dua-actions">
+            <button class="small btn" onclick="selectTripAsCity('${safeName}', ${place.latitude}, ${place.longitude})">اعتمد هذا الموقع في التطبيق</button>
+            <a class="small tab" style="text-decoration:none" target="_blank" href="https://www.google.com/maps/search/?api=1&query=${place.latitude},${place.longitude}">فتح في الخريطة</a>
+          </div>
+        </div>
+      `);
+    }
+
+    results.innerHTML = cards.join("");
+  }catch(e){
+    results.innerHTML = `<div class="dua-card trip-bad"><div class="dua-title">تعذر جلب البيانات</div><div class="dua-text">تأكد من الإنترنت وحاول مرة ثانية.</div></div>`;
+  }
+}
+
+async function selectTripAsCity(name, lat, lng){
+  selectedCity = {name:name, label:name, lat:Number(lat), lng:Number(lng), tz:3};
+  localStorage.setItem("selectedCity", JSON.stringify(selectedCity));
+  if(typeof refreshAll === "function") await refreshAll();
+  alert("تم اعتماد الموقع داخل التطبيق");
+}
+
+setTimeout(()=>{
+  const btn = document.getElementById("tripSearchButton");
+  const input = document.getElementById("tripSearchInput");
+  if(btn) btn.addEventListener("click", searchTripLocation);
+  if(input) input.addEventListener("keydown", (e)=>{ if(e.key === "Enter") searchTripLocation(); });
+}, 500);
