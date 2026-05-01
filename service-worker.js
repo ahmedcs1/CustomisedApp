@@ -1,4 +1,4 @@
-const CACHE_VERSION = "customised-app-v8-cache-refresh";
+const CACHE_VERSION = "customised-app-v9-qatar-places";
 const FILES_TO_CACHE = [
   "./",
   "./index.html",

@@ -250,3 +250,154 @@ async function resetToDoha(){
   if(typeof refreshAll === "function") await refreshAll();
   alert("تمت العودة إلى الدوحة");
 }
+
+
+
+/* ===== V9 Better Location Search with Qatar Places Fallback ===== */
+const QATAR_KNOWN_PLACES = [
+  {name:"سيلين", aliases:["سيلين","sealine","seal line","sealine beach","sealine qatar"], country:"Qatar", admin1:"Al Wakrah", latitude:24.8570, longitude:51.5150},
+  {name:"خور العديد", aliases:["خور العديد","khor al adaid","inland sea","inland sea qatar"], country:"Qatar", admin1:"Al Wakrah", latitude:24.6300, longitude:51.3200},
+  {name:"زكريت", aliases:["زكريت","zekreet","zekrit","zekreet qatar"], country:"Qatar", admin1:"Al Rayyan", latitude:25.4840, longitude:50.8460},
+  {name:"دخان", aliases:["دخان","dukhan","dukhan qatar"], country:"Qatar", admin1:"Al Rayyan", latitude:25.4292, longitude:50.7850},
+  {name:"الخور", aliases:["الخور","alkhor","al khor","al khor qatar"], country:"Qatar", admin1:"Al Khor", latitude:25.6804, longitude:51.4969},
+  {name:"الذخيرة", aliases:["الذخيرة","al thakhira","thakhira","al dhakhira"], country:"Qatar", admin1:"Al Khor", latitude:25.7350, longitude:51.5350},
+  {name:"الشمال", aliases:["الشمال","al shamal","ruwais","al ruwais"], country:"Qatar", admin1:"Madinat ash Shamal", latitude:26.1293, longitude:51.2009},
+  {name:"أم باب", aliases:["ام باب","أم باب","umm bab","umbab"], country:"Qatar", admin1:"Al Rayyan", latitude:25.2140, longitude:50.8070},
+  {name:"روضة راشد", aliases:["روضة راشد","rawdat rashid"], country:"Qatar", admin1:"Al Rayyan", latitude:25.1800, longitude:51.0900},
+  {name:"الغارية", aliases:["الغارية","al ghariya","ghariya"], country:"Qatar", admin1:"Al Shamal", latitude:26.0500, longitude:51.3600},
+  {name:"فويرط", aliases:["فويرط","fuwairit","fuwairit beach"], country:"Qatar", admin1:"Al Shamal", latitude:26.0300, longitude:51.3700},
+  {name:"سميسمة", aliases:["سميسمة","simaisma","sumaysimah"], country:"Qatar", admin1:"Al Daayen", latitude:25.5760, longitude:51.4860},
+  {name:"لوسيل", aliases:["لوسيل","lusail","lusail qatar"], country:"Qatar", admin1:"Al Daayen", latitude:25.4200, longitude:51.5200},
+  {name:"الوكرة", aliases:["الوكرة","wakra","al wakrah","al wakra"], country:"Qatar", admin1:"Al Wakrah", latitude:25.1715, longitude:51.6034},
+  {name:"الدوحة", aliases:["الدوحة","doha","doha qatar"], country:"Qatar", admin1:"Doha", latitude:25.2854, longitude:51.5310}
+];
+
+function normalizePlaceText(text){
+  return String(text || "")
+    .toLowerCase()
+    .replace(/[أإآ]/g, "ا")
+    .replace(/ة/g, "ه")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function findKnownQatarPlaces(query){
+  const q = normalizePlaceText(query);
+  if(!q) return [];
+  return QATAR_KNOWN_PLACES.filter(p =>
+    p.aliases.some(a => normalizePlaceText(a).includes(q) || q.includes(normalizePlaceText(a)))
+  );
+}
+
+async function getWeatherForTripPlace(place){
+  const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${place.latitude}&longitude=${place.longitude}&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,wind_gusts_10m,precipitation&timezone=auto`;
+  const wRes = await fetch(weatherUrl);
+  const wData = await wRes.json();
+  return wData.current;
+}
+
+function renderTripCard(place, w){
+  const decision = buildTripDecision(w);
+  const safeName = String(place.name || "").replace(/'/g,"\\'");
+  const placeName = `${place.name || ""}${place.admin1 ? " - " + place.admin1 : ""}${place.country ? " - " + place.country : ""}`;
+
+  return `
+    <div class="dua-card ${decision.className}">
+      <div class="trip-decision">${decision.title}</div>
+      <div class="dua-title">${placeName}</div>
+      <div class="mini-grid">
+        <div class="mini"><div>الحرارة</div><div>${toEnglish(Math.round(w.temperature_2m))}°C</div></div>
+        <div class="mini"><div>الإحساس</div><div>${toEnglish(Math.round(w.apparent_temperature))}°C</div></div>
+        <div class="mini"><div>الرطوبة</div><div>${toEnglish(w.relative_humidity_2m)}%</div></div>
+        <div class="mini"><div>الرياح</div><div>${toEnglish(Math.round(w.wind_speed_10m))} كم/س</div></div>
+        <div class="mini"><div>الهبات</div><div>${toEnglish(Math.round(w.wind_gusts_10m || 0))} كم/س</div></div>
+        <div class="mini"><div>المطر</div><div>${toEnglish(w.precipitation || 0)} mm</div></div>
+      </div>
+      <div class="dua-text" style="margin-top:10px">
+        <strong>الحالة:</strong> ${tripWeatherCodeToArabic(w.weather_code)}<br>
+        <strong>التقييم:</strong> ${toEnglish(Math.max(0, Math.round(decision.score)))} / 100<br>
+        <strong>الملاحظات:</strong><br>
+        ${decision.reasons.map(r => "• " + r).join("<br>")}
+      </div>
+      <div class="dua-actions">
+        <button class="small btn" onclick="selectTripAsCity('${safeName}', ${place.latitude}, ${place.longitude}, '${place.country || ""}')">اعتمد هذا الموقع في التطبيق</button>
+        <a class="small tab" style="text-decoration:none" target="_blank" href="https://www.google.com/maps/search/?api=1&query=${place.latitude},${place.longitude}">فتح في الخريطة</a>
+      </div>
+    </div>
+  `;
+}
+
+async function searchTripLocationV9(){
+  const input = document.getElementById("tripSearchInput");
+  const results = document.getElementById("tripResults");
+  if(!input || !results) return;
+
+  const query = input.value.trim();
+  if(!query){
+    alert("اكتب اسم المكان أولاً");
+    return;
+  }
+
+  results.innerHTML = `<div class="dua-card"><div class="dua-title">جاري البحث...</div><div class="dua-text">نبحث عن الموقع ونفحص الطقس الآن.</div></div>`;
+
+  try{
+    let places = [];
+
+    const known = findKnownQatarPlaces(query);
+    if(known.length > 0){
+      places = known;
+    } else {
+      const searchQueries = [query, `${query} Qatar`];
+      for(const q of searchQueries){
+        const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=5&language=ar&format=json`;
+        const geoRes = await fetch(geoUrl);
+        const geoData = await geoRes.json();
+        if(geoData.results && geoData.results.length > 0){
+          places = geoData.results.map(p => ({
+            name:p.name,
+            country:p.country,
+            admin1:p.admin1,
+            latitude:p.latitude,
+            longitude:p.longitude
+          }));
+          break;
+        }
+      }
+    }
+
+    if(!places || places.length === 0){
+      results.innerHTML = `<div class="dua-card trip-bad"><div class="dua-title">لم يتم العثور على الموقع</div><div class="dua-text">جرّب كتابة الاسم بطريقة أخرى، مثال: سيلين، Sealine Qatar، زكريت، Dukhan Qatar.</div></div>`;
+      return;
+    }
+
+    const cards = [];
+    for(const place of places.slice(0,3)){
+      const w = await getWeatherForTripPlace(place);
+      cards.push(renderTripCard(place, w));
+    }
+
+    results.innerHTML = cards.join("");
+  }catch(e){
+    results.innerHTML = `<div class="dua-card trip-bad"><div class="dua-title">تعذر جلب البيانات</div><div class="dua-text">تأكد من الإنترنت وحاول مرة ثانية.</div></div>`;
+  }
+}
+
+async function selectTripAsCity(name, lat, lng, country){
+  selectedCity = {name:name, label:name, country:country || "", lat:Number(lat), lng:Number(lng), tz:3};
+  localStorage.setItem("selectedCity", JSON.stringify(selectedCity));
+  if(typeof refreshAll === "function") await refreshAll();
+  alert("تم اعتماد الموقع داخل التطبيق");
+}
+
+setTimeout(()=>{
+  const btn = document.getElementById("tripSearchButton");
+  const input = document.getElementById("tripSearchInput");
+  if(btn){
+    btn.replaceWith(btn.cloneNode(true));
+    const newBtn = document.getElementById("tripSearchButton");
+    newBtn.addEventListener("click", searchTripLocationV9);
+  }
+  if(input){
+    input.addEventListener("keydown", (e)=>{ if(e.key === "Enter") searchTripLocationV9(); });
+  }
+}, 800);
