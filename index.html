@@ -3,34 +3,126 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Customised App V7</title>
+<meta name="theme-color" content="#0f172a">
+<title>Customised App V5 - أحمد المحاميد</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
 <style>
-body{font-family:Arial,sans-serif;background:#eef4f7;margin:0;padding:20px}
-.card{background:#fff;border-radius:18px;padding:20px;box-shadow:0 8px 20px rgba(0,0,0,.06);margin-bottom:18px}
-button{padding:12px 18px;border:none;border-radius:12px;background:#0b7fab;color:#fff;font-size:16px}
-select{padding:10px;border-radius:10px;width:100%;margin:10px 0}
-h1,h2{margin:0 0 10px}
-.small{color:#666}
+:root{--bg:#edf6ff;--card:rgba(255,255,255,.88);--text:#0f172a;--muted:#64748b;--primary:#0f766e;--primary2:#2563eb;--line:rgba(148,163,184,.28);--shadow:0 18px 45px rgba(15,23,42,.12);--soft:rgba(15,118,110,.10);--danger:#dc2626;--gold:#f59e0b}
+body.dark{--bg:#020617;--card:rgba(15,23,42,.88);--text:#e5e7eb;--muted:#94a3b8;--primary:#2dd4bf;--primary2:#60a5fa;--line:rgba(148,163,184,.18);--shadow:0 18px 45px rgba(0,0,0,.34);--soft:rgba(45,212,191,.12);--danger:#f87171;--gold:#fbbf24}
+*{box-sizing:border-box} body{margin:0;min-height:100vh;font-family:Arial,Tahoma,sans-serif;background:radial-gradient(circle at top right,rgba(45,212,191,.24),transparent 34%),radial-gradient(circle at bottom left,rgba(37,99,235,.19),transparent 34%),var(--bg);color:var(--text)} .page{max-width:960px;margin:0 auto;padding:14px}
+.hero{border-radius:30px;padding:22px;color:white;background:linear-gradient(135deg,rgba(15,118,110,.94),rgba(37,99,235,.86));box-shadow:var(--shadow);overflow:hidden;position:relative;animation:fadeUp .35s ease both} .hero:after{content:"";position:absolute;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.14);left:-70px;top:-80px} .hero>*{position:relative;z-index:1} .hero-top{display:flex;justify-content:space-between;gap:12px;align-items:center} h1{margin:0;font-size:26px} .owner{margin-top:6px;font-weight:800;opacity:.95} .pill{padding:9px 12px;border-radius:999px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);font-weight:900;white-space:nowrap} .clock{margin-top:18px;text-align:center;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.2);border-radius:24px;padding:18px} .clock-time{font-size:45px;font-weight:900;direction:ltr} .clock-date,.hijri-date{margin-top:7px;opacity:.94}
+.toolbar{display:grid;grid-template-columns:1fr;gap:9px;margin:13px 0} select,button,input,textarea{font-family:Arial,Tahoma,sans-serif} select,button,input,textarea{border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:16px;padding:12px;font-size:15px;font-weight:800;box-shadow:0 8px 20px rgba(15,23,42,.06)} button{cursor:pointer} button:active{transform:scale(.985)} .btn{background:linear-gradient(135deg,var(--primary),var(--primary2));border:none;color:white} .install-btn{display:none;width:100%;margin-bottom:12px}
+.tabs{display:flex;gap:8px;overflow:auto;margin:12px 0;padding-bottom:3px} .tab{white-space:nowrap;padding:11px 13px;border-radius:999px;background:var(--card);border:1px solid var(--line);font-weight:900} .tab.active{background:linear-gradient(135deg,var(--primary),var(--primary2));color:white;border:none}
+.grid{display:grid;grid-template-columns:1fr;gap:14px} .card{background:var(--card);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:24px;padding:16px;box-shadow:var(--shadow);animation:fadeUp .5s ease both} .wide{grid-column:1/-1} .card-title{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:19px;font-weight:900;margin-bottom:12px} .tag{font-size:12px;color:var(--primary);background:var(--soft);border:1px solid var(--line);padding:6px 10px;border-radius:999px;white-space:nowrap}
+.row{display:flex;justify-content:space-between;gap:12px;padding:12px 2px;border-bottom:1px solid var(--line)} .row:last-child{border-bottom:none} .label{color:var(--muted);font-weight:900} .value{font-weight:900;text-align:left;direction:ltr;unicode-bidi:plaintext}
+.weather-main{display:flex;justify-content:space-between;gap:12px;align-items:center} .temp{font-size:43px;font-weight:900;color:var(--primary);direction:ltr} .weather-desc{color:var(--muted);font-weight:800;line-height:1.65} .mini-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px} .mini{background:var(--soft);border:1px solid var(--line);border-radius:16px;padding:10px} .mini div:first-child{font-size:12px;color:var(--muted);font-weight:900} .mini div:last-child{margin-top:5px;font-weight:900;direction:ltr}
+.prayer-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px} .prayer,.dua-card,.dhikr{padding:13px;border-radius:18px;background:var(--soft);border:1px solid var(--line)} .prayer-name,.dua-title{color:var(--muted);font-weight:900;margin-bottom:7px} .prayer-time{font-size:21px;font-weight:900;direction:ltr;text-align:left} .notice{margin-top:10px;color:var(--muted);font-size:13px;line-height:1.6} .alert-on{color:var(--primary);font-weight:900} .alert-off{color:var(--danger);font-weight:900}
+.compass{width:228px;height:228px;border-radius:50%;margin:auto;border:2px solid var(--line);background:radial-gradient(circle,var(--soft),transparent 70%),conic-gradient(from 0deg,rgba(148,163,184,.14),transparent 15deg,rgba(148,163,184,.14) 30deg,transparent 45deg);position:relative;display:grid;place-items:center;overflow:hidden} .mark{position:absolute;font-weight:900;color:var(--muted)} .n{top:10px}.s{bottom:10px}.e{left:14px}.w{right:14px} .needle-wrap{position:absolute;width:100%;height:100%;display:grid;place-items:center;transition:transform .18s linear} .needle{width:0;height:0;border-left:13px solid transparent;border-right:13px solid transparent;border-bottom:96px solid var(--gold);transform:translateY(-38px);filter:drop-shadow(0 7px 10px rgba(0,0,0,.2))} .needle-base{width:24px;height:24px;border-radius:50%;background:var(--primary);position:absolute;box-shadow:0 0 0 6px var(--soft)} .kaaba{position:absolute;font-size:34px;transform:translateY(48px)} .qibla-degree{text-align:center;margin-top:12px;font-size:19px;color:var(--primary);font-weight:900;direction:ltr}
+.section{display:none} .section.active{display:block} .dua-list{display:grid;gap:10px} .dua-text{white-space:pre-wrap;line-height:1.9;font-size:16px} .dua-actions{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap} .small{padding:8px 10px;font-size:13px} .form-grid{display:grid;gap:8px;margin-bottom:12px} textarea{min-height:120px;line-height:1.7;font-weight:600} .footer{text-align:center;color:var(--muted);font-size:13px;margin:18px 0 4px;line-height:1.8} @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(min-width:760px){.toolbar{grid-template-columns:1fr auto auto auto}.grid{grid-template-columns:1fr 1fr}.prayer-grid{grid-template-columns:repeat(3,1fr)}.mini-grid{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:480px){.page{padding:11px}h1{font-size:22px}.clock-time{font-size:38px}.compass{width:210px;height:210px}}
+
+.trip-ok{background:rgba(52,211,153,.13)!important;border-color:rgba(52,211,153,.35)!important}
+.trip-mid{background:rgba(245,158,11,.13)!important;border-color:rgba(245,158,11,.35)!important}
+.trip-bad{background:rgba(248,113,113,.13)!important;border-color:rgba(248,113,113,.35)!important}
+.trip-decision{font-size:18px;font-weight:900;margin-bottom:8px}
+
 </style>
 </head>
 <body>
-<div class="card">
-<h1>تطبيق الأوقات الذكي</h1>
-<p class="small">تصميم خاص: أحمد المحاميد</p>
+<main class="page">
+<section class="hero">
+<div class="hero-top"><div><h1>تطبيق الأوقات الذكي</h1><div class="owner">تصميم خاص: أحمد المحاميد</div></div><div class="pill" id="cityPill">الدوحة</div></div>
+<div class="clock"><div class="clock-time" id="currentTime">--:--:--</div><div class="clock-date" id="currentDate">--</div><div class="hijri-date" id="hijriDate">--</div></div>
+</section>
+
+<div class="toolbar">
+<select id="citySelect"></select>
+<button id="gpsButton">📍 موقعي</button>
+<button id="darkModeButton">🌙 الوضع الداكن</button>
+<button id="alertButton">🔔 التنبيهات</button>
+<button id="forceUpdateButton">🔄 تحديث</button>
+</div>
+<button id="installButton" class="install-btn btn">تثبيت التطبيق على الشاشة</button>
+
+<div class="tabs">
+<button class="tab active" data-tab="home">الرئيسية</button>
+<button class="tab" data-tab="settings">الإعدادات</button>
+<button class="tab" data-tab="adhkar">الأذكار</button>
+<button class="tab" data-tab="duas">الأدعية</button>
+<button class="tab" data-tab="sleep">النوم الذكي</button>
+<button class="tab" onclick="window.location.href=\'weekly-full-plan.html\'">🏋️ تمارين الظهر والعمود</button>
+<button class="tab" data-tab="trip">🧺 فحص الرحلات</button>
 </div>
 
-<div class="card">
-<h2>اختيار الموقع</h2>
-<select id="city">
-<option value="doha|Qatar">الدوحة - Qatar</option>
-<option value="maan|Jordan">معان - Jordan</option>
-<option value="sealine|Qatar">سيلين - Qatar</option>
-</select>
-<button onclick="saveLocation()">اعتماد الموقع</button>
-<button onclick="resetLocation()">العودة للدوحة</button>
-<p id="current"></p>
+<section id="home" class="section active">
+<div class="grid">
+<div class="card"><div class="card-title"><span>☀️ الشروق والغروب</span><span class="tag">Live</span></div><div class="row"><div class="label">شروق اليوم</div><div class="value" id="sunriseToday">--</div></div><div class="row"><div class="label">غروب اليوم</div><div class="value" id="sunsetToday">--</div></div><div class="row"><div class="label">مدة النهار</div><div class="value" id="dayLengthToday">--</div></div><div class="row"><div class="label">شروق غداً</div><div class="value" id="sunriseTomorrow">--</div></div><div class="row"><div class="label">غروب غداً</div><div class="value" id="sunsetTomorrow">--</div></div></div>
+<div class="card"><div class="card-title"><span>🌤️ الطقس الاحترافي</span><span class="tag" id="weatherStatus">تحميل</span></div><div class="weather-main"><div><div class="temp" id="temperature">--°</div><div class="weather-desc" id="weatherDescription">--</div></div><div class="weather-desc">آخر تحديث:<br><span id="weatherTime">--</span></div></div><div class="mini-grid"><div class="mini"><div>الإحساس</div><div id="apparentTemp">--</div></div><div class="mini"><div>الرطوبة</div><div id="humidity">--</div></div><div class="mini"><div>الرياح</div><div id="windSpeed">--</div></div><div class="mini"><div>المطر</div><div id="precipitation">--</div></div></div></div>
+<div class="card wide"><div class="card-title"><span>🕌 أوقات الصلاة</span><span class="tag" id="prayerSource">طريقة الحساب</span></div><div class="prayer-grid"><div class="prayer"><div class="prayer-name">الفجر</div><div class="prayer-time" id="fajr">--</div></div><div class="prayer"><div class="prayer-name">الشروق</div><div class="prayer-time" id="sunrisePrayer">--</div></div><div class="prayer"><div class="prayer-name">الظهر</div><div class="prayer-time" id="dhuhr">--</div></div><div class="prayer"><div class="prayer-name">العصر</div><div class="prayer-time" id="asr">--</div></div><div class="prayer"><div class="prayer-name">المغرب</div><div class="prayer-time" id="maghrib">--</div></div><div class="prayer"><div class="prayer-name">العشاء</div><div class="prayer-time" id="isha">--</div></div></div><div class="notice">حالة التنبيهات: <span id="alertStatus" class="alert-off">متوقفة</span></div></div>
+<div class="card wide"><div class="card-title"><span>🧭 القبلة</span><span class="tag">High Accuracy</span></div><div class="compass"><div class="mark n">N</div><div class="mark s">S</div><div class="mark e">E</div><div class="mark w">W</div><div class="needle-wrap" id="qiblaNeedleWrap"><div class="needle"></div><div class="needle-base"></div></div><div class="kaaba">🕋</div></div><div class="qibla-degree" id="qiblaDegree">--</div><button id="compassButton">تشغيل البوصلة ومعايرة الاتجاه</button><div class="notice" id="compassNote">لأفضل دقة: فعّل GPS، حرّك الجوال على شكل 8، وابتعد عن المعادن. دقة البوصلة تعتمد على حساس الجهاز والمتصفح.</div></div>
+
+<div class="card wide">
+  <div class="card-title"><span>🏋️ تمارين الظهر والعمود</span><span class="tag">برنامج أسبوعي</span></div>
+  <p class="notice">برنامج مرتب لتقوية عضلات الظهر، دعم العمود الفقري، تحسين الاستقامة، دعم الأكتاف، وتمارين البيت والجيم.</p>
+  <button class="btn" onclick="window.location.href='weekly-full-plan.html'">فتح صفحة التمارين</button>
 </div>
 
+</div>
+</section>
+
+<section id="settings" class="section">
+<div class="card wide"><div class="card-title"><span>⚙️ الإعدادات</span><span class="tag">V5</span></div>
+<div class="form-grid">
+<label>طريقة حساب الصلاة</label><select id="prayerMethod"><option value="4">Qatar 🇶🇦</option><option value="3">Umm Al-Qura 🇸🇦</option><option value="2">Muslim World League 🌍</option></select>
+<label>وقت الاستعداد قبل الفجر بالدقائق</label><input id="wakeBeforeFajr" type="number" value="35">
+<label>هدف النوم بالساعات</label><input id="sleepHours" type="number" value="7" step="0.5">
+<label><input type="checkbox" id="notifyBefore"> تنبيه قبل الصلاة بـ 10 دقائق</label>
+<label><input type="checkbox" id="notifyAtTime"> تنبيه وقت الصلاة</label>
+<button id="saveSettings" class="btn">حفظ الإعدادات</button>
+</div><div class="notice">ملاحظة: التنبيهات وهو التطبيق مغلق بالكامل تحتاج Push Server مثل Firebase. هذه النسخة تعمل ضمن حدود المتصفح وGitHub Pages.</div></div>
+</section>
+
+<section id="sleep" class="section">
+<div class="card wide"><div class="card-title"><span>🧠 اقتراح النوم الذكي</span><span class="tag">Smart Planner</span></div>
+<div class="row"><div class="label">وقت النوم المقترح</div><div class="value" id="suggestedSleep">--</div></div>
+<div class="row"><div class="label">وقت الاستيقاظ المقترح</div><div class="value" id="suggestedWake">--</div></div>
+<div class="row"><div class="label">السبب</div><div class="value" id="sleepReason" style="direction:rtl;text-align:right">--</div></div>
+<div class="notice">الاقتراح يعتمد على الفجر، العشاء، هدف النوم، ووقت الاستعداد قبل الفجر. لا يستخدم API خارجي.</div></div>
+</section>
+
+<section id="adhkar" class="section">
+<div class="grid"><div class="card"><div class="card-title"><span>🌅 أذكار الصباح</span><span class="tag">مرتب</span></div><div id="morningList" class="dua-list"></div></div><div class="card"><div class="card-title"><span>🌙 أذكار المساء</span><span class="tag">مرتب</span></div><div id="eveningList" class="dua-list"></div></div></div>
+</section>
+
+<section id="duas" class="section">
+<div class="card wide"><div class="card-title"><span>🤲 الأدعية</span><span class="tag">قابل للإضافة</span></div>
+<div class="form-grid"><input id="duaTitle" placeholder="عنوان الدعاء"><input id="duaCategory" placeholder="التصنيف"><textarea id="duaText" placeholder="اكتب الدعاء هنا"></textarea><button id="addDuaBtn" class="btn">إضافة الدعاء</button></div>
+<input id="duaSearch" placeholder="بحث في الأدعية...">
+<div id="duaList" class="dua-list" style="margin-top:12px"></div>
+</div>
+</section>
+
+
+<section id="trip" class="section">
+<div class="card wide">
+  <div class="card-title"><span>🧺 فحص الرحلات والشوي</span><span class="tag">Location Weather</span></div>
+  <p class="notice">اكتب اسم المكان، مثل: سيلين، زكريت، دخان، الخور، أو أي مكان بالعالم. التطبيق سيبحث عن الموقع ويعرض الطقس وهل مناسب للطلعة والشوي.</p>
+  <div class="form-grid">
+    <input id="tripSearchInput" placeholder="اكتب اسم المكان هنا... مثال: Sealine Qatar">
+    <button id="tripSearchButton" class="btn">بحث وفحص المكان</button>
+  </div>
+  <div id="tripResults" class="dua-list" style="margin-top:12px"></div>
+</div>
+</section>
+
+<div class="footer">Customised App V5 Final • أحمد المحاميد<br>الأرقام English • طقس احترافي • أدعية وأذكار • نوم ذكي</div>
+</main>
+<script>
+window.PRESET_DUAS = [{"title": "قضاء الدين والغنى من الفقر", "category": "الرزق والدين", "text": "اللهم رب السماوات السبع ورب الأرض ورب العرش العظيم، ربنا ورب كل شيء، فالق الحب والنوى، ومنزل التوراة والإنجيل والفرقان، أعوذ بك من شر كل شيء أنت آخذ بناصيته. اللهم أنت الأول فليس قبلك شيء، وأنت الآخر فليس بعدك شيء، وأنت الظاهر فليس فوقك شيء، وأنت الباطن فليس دونك شيء، اقضِ عنا الدين وأغننا من الفقر."}, {"title": "الاستعاذة بكلمات الله التامات", "category": "الحفظ والتحصين", "text": "أعوذ بكلمات الله التامات من شر ما خلق وذرأ وبرأ، ومن شر ما ينزل من السماء، ومن شر ما يعرج فيها، ومن شر ما يخرج من الأرض، ومن شر ما يذرأ فيها، ومن شر فتن الليل والنهار، ومن شر كل طارق إلا طارقًا يطرق بخير يا رحمن."}, {"title": "الغنى بالحلال", "category": "الرزق والدين", "text": "اللهم يا غني يا حميد، يا مبدئ يا معيد، يا رحيم يا ودود، أغنني بحلالك عن حرامك، واكفني بفضلك عمن سواك."}, {"title": "شكر النعمة وصلاح الذرية", "category": "الأهل والذرية", "text": "اللهم أوزعني أن أشكر نعمتك علي وعلى والدي، وأن أعمل صالحًا ترضاه، وأصلح لي في ذريتي، إني تبت إليك وإني من المسلمين."}, {"title": "حسبنا الله سيؤتينا الله من فضله", "category": "الرجاء والتوكل", "text": "حسبنا الله سيؤتينا الله من فضله، إنا إلى ربنا راغبون."}, {"title": "خير الدنيا والآخرة", "category": "جوامع الدعاء", "text": "اللهم إني أسألك من الخير كله، عاجله وآجله، ما علمت منه وما لم أعلم، وأعوذ بك من الشر كله، عاجله وآجله، ما علمت منه وما لم أعلم. وأسألك الجنة وما قرّب إليها من قول أو عمل، وأعوذ بك من النار وما قرّب إليها من قول أو عمل. وأسألك مما سألك به محمد صلى الله عليه وسلم، وأعوذ بك مما تعوذ منه محمد صلى الله عليه وسلم، وما قضيت لي من قضاء فاجعل عاقبته رشدًا."}, {"title": "ذكر بين الأذان والإقامة للفجر", "category": "الأذكار", "text": "سبحان الله وبحمده، سبحان الله العظيم، أستغفر الله. يُكرر 100 مرة بين الأذان والإقامة وقت صلاة الفجر."}, {"title": "الأمانات الخمسة", "category": "الحفظ والتحصين", "text": "1- صلاة الصبح.\n2- آية الكرسي دبر كل صلاة.\n3- اللهم أنت ربي خلقتني وأنا عبدك وأنا على عهدك ووعدك ما استطعت، أعوذ بك من شر ما صنعت، أبوء بنعمتك علي وأبوء بذنبي فاغفر لي فإنه لا يغفر الذنوب إلا أنت.\n4- بسم الله الذي لا يضر مع اسمه شيء في الأرض ولا في السماء وهو السميع العليم. ثلاث مرات.\n5- اللهم استودعك ديني ونفسي ومالي وأهلي وخواتيم أعمالي، فاحفظنا بما تحفظ عبادك الصالحين."}, {"title": "دعاء الخروج من المنزل", "category": "اليوميات", "text": "بسم الله، آمنت بالله، توكلت على الله، لا حول ولا قوة إلا بالله. اللهم إني أعوذ بك أن أَضِل أو أُضَل، أو أَزِل أو أُزَل، أو أَظلم أو أُظلم، أو أَجهل أو يُجهل عليّ."}, {"title": "دعاء النوم وإزالة الأرق", "category": "النوم", "text": "اللهم رب السماوات السبع وما أظلت، ورب الأرضين السبع وما أقلت، ورب الشياطين وما أضلت، كن لي جارًا من شر خلقك كلهم جميعًا، أن يفرط علي أحد منهم أو أن يبغي علي، عز جارك، وجل ثناؤك، ولا إله غيرك، ولا إله إلا أنت."}, {"title": "سورة الفتح - آية 29", "category": "القرآن", "text": "محمد رسول الله والذين معه أشداء على الكفار رحماء بينهم تراهم ركعًا سجدًا يبتغون فضلًا من الله ورضوانًا سيماهم في وجوههم من أثر السجود ذلك مثلهم في التوراة ومثلهم في الإنجيل كزرع أخرج شطأه فآزره فاستغلظ فاستوى على سوقه يعجب الزراع ليغيظ بهم الكفار وعد الله الذين آمنوا وعملوا الصالحات منهم مغفرة وأجرًا عظيمًا."}, {"title": "دعاء رد البلاء", "category": "الكرب والبلاء", "text": "اللهم إني أعوذ بك من جهد البلاء، وسوء القضاء، ودرك الشقاء، وعضال الداء، وشماتة الأعداء."}, {"title": "الهم والحزن والدين", "category": "الكرب والبلاء", "text": "اللهم إني أعوذ بك من الهم والحزن، وأعوذ بك من العجز والكسل، وأعوذ بك من الجبن والبخل، وأعوذ بك من غلبة الدين وقهر الرجال.\nاللهم اكفني بحلالك عن حرامك، وأغنني بفضلك عمن سواك.\nاللهم مالك الملك، تؤتي الملك من تشاء، وتنزع الملك ممن تشاء، وتعز من تشاء، وتذل من تشاء، بيدك الخير، إنك على كل شيء قدير. رحمن الدنيا والآخرة ورحيمهما، تعطيهما من تشاء وتمنعهما من تشاء، ارحمني رحمة تغنيني بها عن رحمة من سواك."}, {"title": "تمام النعمة ودوام العافية", "category": "جوامع الدعاء", "text": "اللهم إنا نسألك من النعمة تمامها، ومن العافية دوامها، ومن الخير أكمله. اللهم طهر قلوبنا، واستر عيوبنا، واغفر ذنوبنا، واشرح صدورنا، واحفظ أحبتنا، واشف مرضانا، وارحم موتانا برحمتك يا أرحم الراحمين."}, {"title": "رقية مختصرة", "category": "الشفاء والرقية", "text": "بسم الله تربة أرضنا، بريقة بعضنا، اشفِ سقيمنا بإذن ربنا."}, {"title": "اللهم اكفنيه بما شئت", "category": "الحفظ والتحصين", "text": "اللهم اكفنيه بما شئت وكيف شئت إنك على ما تشاء قدير. اللهم قني شر فلان ابن فلان بما شئت، اللهم لا تجعل له علي مدخلًا، واجعل لي عليه مخارج عظيمة حسنة يا رب العالمين. اللهم رب السماوات السبع ورب العرش العظيم كن لي جارًا من فلان ابن فلان وأحزابه من خلائقك أن يفرط علي أحد منهم أو أن يطغى، عز جارك وجل ثناؤك لا إله إلا أنت. اللهم إني أعوذ بك من شرورهم ونجعلك في نحورهم. أعوذ بكلمات الله التامات من شر ما خلق."}, {"title": "الدعاء بالاسم العظيم", "category": "جوامع الدعاء", "text": "اللهم إني أسألك بأن لك الحمد، لا إله إلا أنت المنان، بديع السماوات والأرض، يا ذا الجلال والإكرام، يا حي يا قيوم."}, {"title": "رب أعني ولا تعن علي", "category": "جوامع الدعاء", "text": "رب أعني ولا تعن علي، وانصرني ولا تنصر علي، وامكر لي ولا تمكر علي، واهدني ويسر الهدى لي، وانصرني على من بغى علي. رب اجعلني لك شكارًا، لك ذكارًا، لك رهابًا، لك مطيعًا، إليك مخبتًا، إليك أواهًا منيبًا. رب تقبل توبتي، واغسل حوبتي، وأجب دعوتي، واهد قلبي، وسدد لساني، وثبت حجتي، واسلل سخيمة قلبي."}, {"title": "دعاء الذرية والصلاة", "category": "الأهل والذرية", "text": "ربنا هب لنا من أزواجنا وذرياتنا قرة أعين، واجعلنا للمتقين إمامًا. ربي هب لي من لدنك ذرية طيبة إنك سميع الدعاء. رب اجعلني مقيم الصلاة ومن ذريتي ربنا وتقبل دعاء. ربي أوزعني أن أشكر نعمتك التي أنعمت علي وعلى والدي، وأن أعمل صالحًا ترضاه، وأصلح لي في ذريتي، إني تبت إليك وإني من المسلمين."}, {"title": "أدعية الكرب القرآنية", "category": "الكرب والبلاء", "text": "رب إني مسني الضر وأنت أرحم الراحمين.\nلا إله إلا أنت سبحانك إني كنت من الظالمين.\nحسبنا الله ونعم الوكيل.\nوأفوض أمري إلى الله إن الله بصير بالعباد.\nاللهم تقبل وطمئن القلوب."}, {"title": "سيد الاستغفار وأدعية جامعة", "category": "الأذكار", "text": "اللهم أنت ربي لا إله إلا أنت، خلقتني وأنا عبدك، وأنا على عهدك ووعدك ما استطعت، أعوذ بك من شر ما صنعت، أبوء لك بنعمتك علي، وأبوء بذنبي فاغفر لي فإنه لا يغفر الذنوب إلا أنت.\nاللهم صل وسلم وبارك على محمد وعلى آله وصحبه أجمعين عدد خلقك ورضا نفسك وزنة عرشك ومداد كلماتك.\nيا حي يا قيوم برحمتك أستغيث، أصلح لي شأني كله ولا تكلني إلى نفسي طرفة عين.\nلا إله إلا أنت سبحانك إني كنت من الظالمين.\nرب إني لما أنزلت إلي من خير فقير.\nاللهم إني أسألك من فضلك ورحمتك فإنه لا يملكها إلا أنت."}, {"title": "الاستعاذة من الشقاء والبلاء", "category": "الكرب والبلاء", "text": "اللهم إني أعوذ بك من جهد البلاء، وأعوذ بك من درك الشقاء، اللهم إني أعوذ بك من عضال الداء، وأعوذ بك من شماتة الأعداء، اللهم إني أعوذ بك من خيبة الرجاء، اللهم إني أعوذ بك من زوال النعمة، اللهم إني أعوذ بك من فجأة النقمة."}, {"title": "ذكر قبل النوم", "category": "النوم", "text": "لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير. لا حول ولا قوة إلا بالله العلي العظيم. سبحان الله، والحمد لله، ولا إله إلا الله، والله أكبر."}, {"title": "المغفرة والرزق", "category": "الرزق والدين", "text": "اللهم اغفر لي ذنبي، ووسع لي في داري، وبارك لي في رزقي."}, {"title": "دعاء قيام الليل", "category": "جوامع الدعاء", "text": "اللهم رب جبريل وميكائيل وإسرافيل، فاطر السماوات والأرض، عالم الغيب والشهادة، أنت تحكم بين عبادك فيما كانوا فيه يختلفون، اهدني لما اختُلف فيه من الحق بإذنك."}, {"title": "جار السوء", "category": "الحفظ والتحصين", "text": "اللهم إني أعوذ بك من جار السوء في دار المقامة، فإن جار البادية يتحول، وأعوذ بك من زوج تشيبني قبل المشيب، ومن ولد يكون علي ربًا، ومن مال يكون علي عذابًا، ومن خليل ماكر، عينه تراني، وقلبه يرعاني، إن رأى حسنة دفنها، وإن رأى سيئة أذاعها."}, {"title": "كنز الكلمات", "category": "جوامع الدعاء", "text": "اللهم إني أسألك الثبات في الأمر، والعزيمة على الرشد، وأسألك موجبات رحمتك، وعزائم مغفرتك، وأسألك شكر نعمتك، وحسن عبادتك، وأسألك قلبًا سليمًا، ولسانًا صادقًا، وأسألك من خير ما تعلم، وأعوذ بك من شر ما تعلم، وأستغفرك لما تعلم، إنك أنت علام الغيوب."}, {"title": "دعاء العلم والفهم", "category": "الأهل والذرية", "text": "اللهم زده علمًا وفهمًا، واحفظه من الخطأ والفواحش والمعاصي والضلال. اللهم ارزقه فهم النبيين وحفظ المرسلين."}, {"title": "يا فتاح", "category": "الرزق والدين", "text": "اللهم ارزقني مالًا أغني به نفسي، وأعاون به صديقي، وأعز به ديني. يا فتاح يا فتاح."}, {"title": "بداية الدعاء وختمه", "category": "آداب الدعاء", "text": "بداية الدعاء: بسم الله الرحمن الرحيم، والحمد لله حمدًا كثيرًا طيبًا مباركًا فيه كما يحب ربنا ويرضى، الحمد لله الذي هدانا لهذا وما كنا لنهتدي لولا أن هدانا الله. اللهم صل على محمد وعلى آل محمد كما صليت على إبراهيم وعلى آل إبراهيم، وبارك على محمد وعلى آل محمد كما باركت على إبراهيم وعلى آل إبراهيم في العالمين إنك حميد مجيد.\nختم الدعاء: يا قاضي الحاجات، ويا مجيب الدعوات، اقض حوائجنا وحوائج السائلين، اللهم لا تجعلني بدعائك رب شقيًا، وكن بي رؤوفًا رحيمًا يا أكرم المعطين."}, {"title": "يا ودود", "category": "الكرب والبلاء", "text": "يا ودود يا ودود يا ودود، يا ذا العرش المجيد، يا فعالًا لما يريد، أسألك بعزك الذي لا يرام، وبملكك الذي لا يضام، وبنورك الذي ملأ أركان عرشك، أن تكفيني حاجتي، يا مغيث أغثني."}, {"title": "دعاء الكرب", "category": "الكرب والبلاء", "text": "لا إله إلا الله العظيم الحليم، لا إله إلا الله رب العرش الكريم، لا إله إلا الله رب السماوات والأرض ورب العرش العظيم."}, {"title": "رقية من العين والحسد", "category": "الشفاء والرقية", "text": "بسم الله يبريك، ومن كل داء يشفيك، ومن شر حاسد إذا حسد، وشر كل ذي عين. بسم الله أرقيك من كل شيء يؤذيك، من شر كل نفس أو عين حاسد، الله يشفيك، بسم الله أرقيك."}];
+window.MORNING_ADHKAR = ["أصبحنا وأصبح الملك لله، والحمد لله، لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير.", "اللهم بك أصبحنا، وبك أمسينا، وبك نحيا، وبك نموت، وإليك النشور.", "اللهم أنت ربي لا إله إلا أنت، خلقتني وأنا عبدك، وأنا على عهدك ووعدك ما استطعت، أعوذ بك من شر ما صنعت، أبوء لك بنعمتك علي، وأبوء بذنبي فاغفر لي فإنه لا يغفر الذنوب إلا أنت.", "بسم الله الذي لا يضر مع اسمه شيء في الأرض ولا في السماء وهو السميع العليم. ثلاث مرات.", "رضيت بالله ربًا، وبالإسلام دينًا، وبمحمد صلى الله عليه وسلم نبيًا. ثلاث مرات.", "يا حي يا قيوم برحمتك أستغيث، أصلح لي شأني كله ولا تكلني إلى نفسي طرفة عين."];
+window.EVENING_ADHKAR = ["أمسينا وأمسى الملك لله، والحمد لله، لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير.", "اللهم بك أمسينا، وبك أصبحنا، وبك نحيا، وبك نموت، وإليك المصير.", "أعوذ بكلمات الله التامات من شر ما خلق. ثلاث مرات.", "اللهم أنت ربي لا إله إلا أنت، خلقتني وأنا عبدك، وأنا على عهدك ووعدك ما استطعت، أعوذ بك من شر ما صنعت، أبوء لك بنعمتك علي، وأبوء بذنبي فاغفر لي فإنه لا يغفر الذنوب إلا أنت.", "بسم الله الذي لا يضر مع اسمه شيء في الأرض ولا في السماء وهو السميع العليم. ثلاث مرات.", "اللهم إني أعوذ بك من الهم والحزن، وأعوذ بك من العجز والكسل، وأعوذ بك من الجبن والبخل، وأعوذ بك من غلبة الدين وقهر الرجال."];
+</script>
 <script src="app.js"></script>
-</body>
-</html>
+</body></html>
