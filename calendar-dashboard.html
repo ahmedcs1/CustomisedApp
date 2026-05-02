@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calendar Dashboard</title>
+<style>
+:root{--bg:#08111f;--card:#111827;--soft:#1f2937;--text:#f8fafc;--muted:#9ca3af;--blue:#38bdf8;--green:#4ade80;--orange:#fb923c;--red:#f87171;--line:rgba(255,255,255,.1)}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Tahoma,sans-serif;background:radial-gradient(circle at top right,rgba(56,189,248,.18),transparent 35%),var(--bg);color:var(--text)}.page{max-width:1000px;margin:auto;padding:14px}.hero{background:linear-gradient(135deg,#0f172a,#0369a1,#0f766e);border-radius:28px;padding:20px;box-shadow:0 18px 45px rgba(0,0,0,.28)}.top{display:flex;justify-content:space-between;gap:12px;align-items:center}.back{color:white;text-decoration:none;background:rgba(255,255,255,.15);padding:10px 12px;border-radius:14px;font-weight:900}h1{margin:0;font-size:25px}.sub{color:rgba(255,255,255,.86);margin-top:7px;line-height:1.6}.grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:14px}.card{background:rgba(17,24,39,.95);border:1px solid var(--line);border-radius:24px;padding:15px;box-shadow:0 16px 40px rgba(0,0,0,.22)}.title{display:flex;justify-content:space-between;gap:10px;align-items:center;font-weight:900;font-size:18px;margin-bottom:12px}.badge{padding:6px 9px;border-radius:999px;background:rgba(56,189,248,.14);color:var(--blue);font-size:12px;font-weight:900}input,select,textarea{width:100%;border:1px solid var(--line);background:#0b1220;color:var(--text);border-radius:14px;padding:12px;margin:6px 0;font-family:inherit}.btn{background:linear-gradient(135deg,var(--green),var(--blue));color:#001018;border:none;border-radius:14px;padding:12px;font-weight:900;width:100%;margin-top:8px}.btn2{background:var(--soft);color:var(--text);border:1px solid var(--line)}.event{background:var(--soft);border:1px solid var(--line);border-radius:18px;padding:13px;margin-bottom:10px}.event h3{margin:0 0 6px}.muted{color:var(--muted);font-size:13px;line-height:1.65}.row{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line);padding:9px 0}.row:last-child{border-bottom:none}.footer{text-align:center;color:var(--muted);font-size:12px;margin:18px 0}@media(min-width:760px){.grid{grid-template-columns:1fr 1fr}.wide{grid-column:1/-1}}
+</style>
+</head>
+<body>
+<div class="page">
+<div class="hero"><div class="top"><div><h1>📅 التقويم والمناسبات</h1><div class="sub">أضف مناسبة، أرسلها واتساب، أو أضفها لتقويم الموبايل بملف ICS</div></div><a class="back" href="index.html">⬅ التطبيق</a></div></div>
+<div class="grid">
+<div class="card"><div class="title"><span>➕ إضافة مناسبة</span><span class="badge">Event</span></div>
+<input id="title" placeholder="عنوان المناسبة">
+<select id="type"><option>رحلة</option><option>تمرين</option><option>موعد</option><option>عائلي</option><option>تذكير</option></select>
+<input id="date" type="date">
+<input id="time" type="time">
+<input id="location" placeholder="المكان">
+<textarea id="notes" placeholder="ملاحظات"></textarea>
+<button class="btn" onclick="addEvent()">حفظ المناسبة</button>
+</div>
+<div class="card"><div class="title"><span>📌 تعليمات</span><span class="badge">Mobile Calendar</span></div>
+<p class="muted">زر Add to Calendar ينشئ ملف .ics. عند فتحه من الموبايل، غالبًا سيعرض عليك إضافته إلى تقويم الهاتف. هذه أفضل طريقة من PWA بدون تطبيق Native.</p>
+<p class="muted">زر واتساب يرسل تفاصيل المناسبة لأي شخص مباشرة.</p>
+</div>
+<div class="card wide"><div class="title"><span>🗓️ المناسبات القادمة</span><button class="btn2" onclick="clearEvents()">مسح الكل</button></div><div id="eventList"></div></div>
+</div>
+<div class="footer">Calendar Dashboard V16</div>
+</div>
+<script>
+function getEvents(){return JSON.parse(localStorage.getItem("calendarEvents")||"[]")}
+function saveEvents(e){localStorage.setItem("calendarEvents",JSON.stringify(e))}
+function addEvent(){
+  if(!title.value || !date.value){alert("اكتب العنوان والتاريخ");return}
+  const e={id:Date.now(),title:title.value,type:type.value,date:date.value,time:time.value||"09:00",location:location.value,notes:notes.value};
+  const list=getEvents();list.push(e);saveEvents(list);renderEvents();title.value=location.value=notes.value="";alert("تم حفظ المناسبة")
+}
+function eventMsg(e){
+return `📅 مناسبة / تذكير
+
+العنوان: ${e.title}
+النوع: ${e.type}
+التاريخ: ${e.date}
+الوقت: ${e.time}
+المكان: ${e.location||"-"}
+الملاحظات: ${e.notes||"-"}
+
+تم الإرسال من تطبيق أحمد المحاميد.`;
+}
+function shareEvent(id){const e=getEvents().find(x=>x.id===id);if(e)window.open("https://wa.me/?text="+encodeURIComponent(eventMsg(e)),"_blank")}
+function downloadICS(id){
+  const e=getEvents().find(x=>x.id===id);if(!e)return;
+  const dt=(e.date.replaceAll("-","")+ "T" + (e.time||"09:00").replace(":","") + "00");
+  const ics=`BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//AhmadApp//Calendar//EN
+BEGIN:VEVENT
+UID:${e.id}@ahmadapp
+DTSTAMP:${new Date().toISOString().replace(/[-:]/g,"").split(".")[0]}Z
+DTSTART:${dt}
+SUMMARY:${e.title}
+LOCATION:${e.location||""}
+DESCRIPTION:${e.notes||""}
+END:VEVENT
+END:VCALENDAR`;
+  const blob=new Blob([ics],{type:"text/calendar"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(e.title||"event")+".ics";a.click();URL.revokeObjectURL(a.href)
+}
+function deleteEvent(id){saveEvents(getEvents().filter(x=>x.id!==id));renderEvents()}
+function clearEvents(){localStorage.removeItem("calendarEvents");renderEvents()}
+function renderEvents(){
+  const list=getEvents().sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
+  eventList.innerHTML=list.length?list.map(e=>`<div class="event"><h3>${e.title}</h3><div class="row"><b>النوع</b><span>${e.type}</span></div><div class="row"><b>التاريخ</b><span>${e.date} ${e.time}</span></div><div class="row"><b>المكان</b><span>${e.location||"-"}</span></div><p class="muted">${e.notes||""}</p><button class="btn" onclick="shareEvent(${e.id})">📲 إرسال واتساب</button><button class="btn btn2" onclick="downloadICS(${e.id})">➕ Add to Calendar</button><button class="btn btn2" onclick="deleteEvent(${e.id})">حذف</button></div>`).join(""):"<p class='muted'>لا توجد مناسبات بعد.</p>"
+}
+renderEvents();
+</script>
+</body>
+</html>

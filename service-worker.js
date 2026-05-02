@@ -1,11 +1,11 @@
-const CACHE_VERSION = "customised-app-v15-workout-whatsapp";
+const CACHE_VERSION = "customised-app-v16-share-calendar";
 const FILES_TO_CACHE = [
   "./",
   "./index.html",
   "./app.js",
   "./manifest.json",
   "./icon.svg",
-  "./weekly-full-plan.html","./workout-dashboard.html","./nutrition-dashboard.html","./women-fitness.html"
+  "./weekly-full-plan.html","./workout-dashboard.html","./nutrition-dashboard.html","./calendar-dashboard.html","./women-fitness.html"
 ];
 
 self.addEventListener("install", (event) => {

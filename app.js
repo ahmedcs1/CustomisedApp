@@ -184,6 +184,7 @@ async function searchTripLocation(){
           <div class="dua-actions">
             <button class="small btn" onclick="selectTripAsCity('${safeName}', ${place.latitude}, ${place.longitude})">اعتمد هذا الموقع في التطبيق</button>
             <a class="small tab" style="text-decoration:none" target="_blank" href="https://www.google.com/maps/search/?api=1&query=${place.latitude},${place.longitude}">فتح في الخريطة</a>
+        <button class="small btn" onclick="shareTripResultWhatsApp(`${placeName}`, `${Math.round(w.temperature_2m)}`, `${Math.round(w.apparent_temperature)}`, `${Math.round(w.wind_speed_10m)}`, `${Math.round(w.wind_gusts_10m || 0)}`, `${w.precipitation || 0}`, `${decision.title}`, `${Math.max(0, Math.round(decision.score))}`, `${decision.reasons.join('\\n')}`)">📲 إرسال النتيجة واتساب</button>
           </div>
         </div>
       `);
@@ -322,6 +323,7 @@ function renderTripCard(place, w){
       <div class="dua-actions">
         <button class="small btn" onclick="selectTripAsCity('${safeName}', ${place.latitude}, ${place.longitude}, '${place.country || ""}')">اعتمد هذا الموقع في التطبيق</button>
         <a class="small tab" style="text-decoration:none" target="_blank" href="https://www.google.com/maps/search/?api=1&query=${place.latitude},${place.longitude}">فتح في الخريطة</a>
+        <button class="small btn" onclick="shareTripResultWhatsApp(`${placeName}`, `${Math.round(w.temperature_2m)}`, `${Math.round(w.apparent_temperature)}`, `${Math.round(w.wind_speed_10m)}`, `${Math.round(w.wind_gusts_10m || 0)}`, `${w.precipitation || 0}`, `${decision.title}`, `${Math.max(0, Math.round(decision.score))}`, `${decision.reasons.join('\\n')}`)">📲 إرسال النتيجة واتساب</button>
       </div>
     </div>
   `;
@@ -401,3 +403,61 @@ setTimeout(()=>{
     input.addEventListener("keydown", (e)=>{ if(e.key === "Enter") searchTripLocationV9(); });
   }
 }, 800);
+
+
+
+/* ===== V16 Local WhatsApp Share Buttons ===== */
+function shareToWhatsApp(message){
+  window.open("https://wa.me/?text=" + encodeURIComponent(message), "_blank");
+}
+
+function getTextSafe(id){
+  const x = document.getElementById(id);
+  return x ? x.textContent.trim() : "--";
+}
+
+function shareMainWeatherWhatsApp(){
+  const city = (selectedCity && selectedCity.label) ? selectedCity.label : getTextSafe("cityPill");
+  const msg =
+`🌤️ حالة الطقس الآن
+
+الموقع: ${city}
+الحالة: ${getTextSafe("weatherDescription")}
+الحرارة: ${getTextSafe("temperature")}
+الإحساس: ${getTextSafe("apparentTemp")}
+الرطوبة: ${getTextSafe("humidity")}
+الرياح: ${getTextSafe("windSpeed")}
+المطر: ${getTextSafe("precipitation")}
+آخر تحديث: ${getTextSafe("weatherTime")}
+
+تم الإرسال من تطبيق أحمد المحاميد.`;
+  shareToWhatsApp(msg);
+}
+
+setTimeout(()=>{
+  const wBtn = document.getElementById("shareWeatherButton");
+  if(wBtn) wBtn.addEventListener("click", shareMainWeatherWhatsApp);
+}, 800);
+
+
+
+function shareTripResultWhatsApp(placeName, temp, apparent, wind, gusts, rain, decisionTitle, score, notes){
+  const msg =
+`🧺 فحص الرحلة والشوي
+
+المكان: ${placeName}
+النتيجة: ${decisionTitle}
+التقييم: ${score}/100
+
+الحرارة: ${temp}°C
+الإحساس: ${apparent}°C
+الرياح: ${wind} كم/س
+الهبات: ${gusts} كم/س
+المطر: ${rain} mm
+
+الملاحظات:
+${notes}
+
+تم الإرسال من تطبيق أحمد المحاميد.`;
+  shareToWhatsApp(msg);
+}
