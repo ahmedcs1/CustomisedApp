@@ -1,4 +1,4 @@
-const CACHE_VERSION = "customised-app-v17-security-clean";
+const CACHE_VERSION = "customised-app-v18-stable-permissions-terms";
 const LOCAL_FILES = [
   "./",
   "./index.html",
@@ -9,7 +9,8 @@ const LOCAL_FILES = [
   "./workout-dashboard.html",
   "./women-fitness.html",
   "./nutrition-dashboard.html",
-  "./calendar-dashboard.html"
+  "./calendar-dashboard.html",
+  "./terms.html"
 ];
 
 self.addEventListener("install", (event) => {
@@ -33,13 +34,13 @@ self.addEventListener("fetch", (event) => {
   const req = event.request;
   const url = new URL(req.url);
 
-  // Do not cache or interfere with external APIs, WhatsApp, Google Maps, or third-party services.
+  // External APIs and third-party sites are never cached or modified.
   if (url.origin !== self.location.origin) {
     event.respondWith(fetch(req));
     return;
   }
 
-  // Network-first for pages and JS so updates appear quickly.
+  // Network-first for pages and JS to avoid stale broken versions.
   if (req.mode === "navigate" || url.pathname.endsWith(".html") || url.pathname.endsWith(".js")) {
     event.respondWith(
       fetch(req)
@@ -53,7 +54,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Cache-first for static local assets only.
+  // Cache-first only for local static assets.
   event.respondWith(
     caches.match(req).then((cached) => cached || fetch(req).then((fresh) => {
       const copy = fresh.clone();

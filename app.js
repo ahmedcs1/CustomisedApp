@@ -184,7 +184,7 @@ async function searchTripLocation(){
           <div class="dua-actions">
             <button class="small btn" onclick="selectTripAsCity('${safeName}', ${place.latitude}, ${place.longitude})">اعتمد هذا الموقع في التطبيق</button>
             <a class="small tab" style="text-decoration:none" target="_blank" href="https://www.google.com/maps/search/?api=1&query=${place.latitude},${place.longitude}">فتح في الخريطة</a>
-        <button class="small btn" onclick="shareTripResultWhatsApp(`${placeName}`, `${Math.round(w.temperature_2m)}`, `${Math.round(w.apparent_temperature)}`, `${Math.round(w.wind_speed_10m)}`, `${Math.round(w.wind_gusts_10m || 0)}`, `${w.precipitation || 0}`, `${decision.title}`, `${Math.max(0, Math.round(decision.score))}`, `${decision.reasons.join('\\n')}`)">📲 إرسال النتيجة واتساب</button>
+        <button class="small btn" onclick="shareTripResultWhatsApp('${String(placeName).replace(/'/g,'\'')}', '${Math.round(w.temperature_2m)}', '${Math.round(w.apparent_temperature)}', '${Math.round(w.wind_speed_10m)}', '${Math.round(w.wind_gusts_10m || 0)}', '${w.precipitation || 0}', '${String(decision.title).replace(/'/g,'\'')}', '${Math.max(0, Math.round(decision.score))}', '${String(decision.reasons.join('\n')).replace(/'/g,'\'')}')">📲 إرسال النتيجة واتساب</button>
           </div>
         </div>
       `);
@@ -323,7 +323,7 @@ function renderTripCard(place, w){
       <div class="dua-actions">
         <button class="small btn" onclick="selectTripAsCity('${safeName}', ${place.latitude}, ${place.longitude}, '${place.country || ""}')">اعتمد هذا الموقع في التطبيق</button>
         <a class="small tab" style="text-decoration:none" target="_blank" href="https://www.google.com/maps/search/?api=1&query=${place.latitude},${place.longitude}">فتح في الخريطة</a>
-        <button class="small btn" onclick="shareTripResultWhatsApp(`${placeName}`, `${Math.round(w.temperature_2m)}`, `${Math.round(w.apparent_temperature)}`, `${Math.round(w.wind_speed_10m)}`, `${Math.round(w.wind_gusts_10m || 0)}`, `${w.precipitation || 0}`, `${decision.title}`, `${Math.max(0, Math.round(decision.score))}`, `${decision.reasons.join('\\n')}`)">📲 إرسال النتيجة واتساب</button>
+        <button class="small btn" onclick="shareTripResultWhatsApp('${String(placeName).replace(/'/g,'\'')}', '${Math.round(w.temperature_2m)}', '${Math.round(w.apparent_temperature)}', '${Math.round(w.wind_speed_10m)}', '${Math.round(w.wind_gusts_10m || 0)}', '${w.precipitation || 0}', '${String(decision.title).replace(/'/g,'\'')}', '${Math.max(0, Math.round(decision.score))}', '${String(decision.reasons.join('\n')).replace(/'/g,'\'')}')">📲 إرسال النتيجة واتساب</button>
       </div>
     </div>
   `;
@@ -468,3 +468,96 @@ function safeOpenExternal(url){
   const w = window.open(url, "_blank", "noopener,noreferrer");
   if(w) w.opener = null;
 }
+
+
+
+/* ===== V18 Stable Permissions + Terms ===== */
+const APP_TERMS_KEY = "ahmadApp_termsAccepted_v18";
+
+function openTermsModal(){
+  const modal = document.getElementById("termsModal");
+  if(modal) modal.style.display = "flex";
+}
+
+function closeTermsModal(){
+  const modal = document.getElementById("termsModal");
+  if(modal) modal.style.display = "none";
+}
+
+function acceptTerms(){
+  const check = document.getElementById("termsAcceptCheck");
+  if(check && !check.checked){
+    alert("يرجى وضع علامة الموافقة أولًا.");
+    return;
+  }
+  localStorage.setItem(APP_TERMS_KEY, new Date().toISOString());
+  closeTermsModal();
+}
+
+function showTermsIfNeeded(){
+  if(!localStorage.getItem(APP_TERMS_KEY)){
+    setTimeout(openTermsModal, 700);
+  }
+}
+
+async function requestAppPermissions(){
+  let messages = [];
+  try{
+    if("geolocation" in navigator){
+      await new Promise((resolve)=>{
+        navigator.geolocation.getCurrentPosition(
+          (pos)=>{
+            messages.push("✅ تم السماح بالموقع.");
+            resolve(pos);
+          },
+          ()=>{
+            messages.push("⚠️ لم يتم السماح بالموقع أو تعذر تحديده.");
+            resolve(null);
+          },
+          {enableHighAccuracy:true, timeout:12000, maximumAge:0}
+        );
+      });
+    } else {
+      messages.push("⚠️ الموقع غير مدعوم في هذا المتصفح.");
+    }
+  }catch(e){
+    messages.push("⚠️ تعذر طلب صلاحية الموقع.");
+  }
+
+  try{
+    if("Notification" in window){
+      if(Notification.permission === "granted"){
+        messages.push("✅ التنبيهات مفعلة مسبقًا.");
+      } else if(Notification.permission !== "denied"){
+        const p = await Notification.requestPermission();
+        messages.push(p === "granted" ? "✅ تم السماح بالتنبيهات." : "⚠️ لم يتم السماح بالتنبيهات.");
+      } else {
+        messages.push("⚠️ التنبيهات مرفوضة من إعدادات المتصفح.");
+      }
+    } else {
+      messages.push("⚠️ التنبيهات غير مدعومة في هذا المتصفح.");
+    }
+  }catch(e){
+    messages.push("⚠️ تعذر طلب صلاحية التنبيهات.");
+  }
+
+  alert(messages.join("\n"));
+  if(typeof refreshAll === "function"){
+    try{ await refreshAll(); }catch(e){}
+  }
+}
+
+function resetTermsForTesting(){
+  localStorage.removeItem(APP_TERMS_KEY);
+  openTermsModal();
+}
+
+setTimeout(()=>{
+  showTermsIfNeeded();
+  const btn = document.getElementById("permissionsButton");
+  if(btn) btn.addEventListener("click", requestAppPermissions);
+  const termsBtn = document.getElementById("openTermsButton");
+  if(termsBtn) termsBtn.addEventListener("click", openTermsModal);
+  const acceptBtn = document.getElementById("acceptTermsButton");
+  if(acceptBtn) acceptBtn.addEventListener("click", acceptTerms);
+}, 800);
