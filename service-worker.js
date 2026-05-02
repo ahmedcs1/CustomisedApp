@@ -1,11 +1,11 @@
-const CACHE_VERSION = "customised-app-v12-workout-link-fix";
+const CACHE_VERSION = "customised-app-v13-women-nutrition";
 const FILES_TO_CACHE = [
   "./",
   "./index.html",
   "./app.js",
   "./manifest.json",
   "./icon.svg",
-  "./weekly-full-plan.html","./workout-dashboard.html"
+  "./weekly-full-plan.html","./workout-dashboard.html","./nutrition-dashboard.html","./women-fitness.html"
 ];
 
 self.addEventListener("install", (event) => {

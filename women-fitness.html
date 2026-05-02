@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رشاقة السيدات - أحمد المحاميد</title>
+<style>
+:root{--bg:#090b12;--card:#141827;--soft:#1e2537;--text:#f8fafc;--muted:#a8b3c4;--pink:#fb7185;--green:#4ade80;--blue:#38bdf8;--purple:#c084fc;--orange:#fb923c;--line:rgba(255,255,255,.09)}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Tahoma,sans-serif;background:radial-gradient(circle at top right,rgba(251,113,133,.18),transparent 35%),radial-gradient(circle at bottom left,rgba(192,132,252,.14),transparent 32%),var(--bg);color:var(--text)}
+.page{max-width:1050px;margin:auto;padding:14px}.hero{background:linear-gradient(135deg,#831843,#7e22ce,#0369a1);border-radius:28px;padding:20px;box-shadow:0 18px 45px rgba(0,0,0,.28)}.top{display:flex;justify-content:space-between;gap:12px;align-items:center}.back{color:white;text-decoration:none;background:rgba(255,255,255,.15);padding:10px 12px;border-radius:14px;font-weight:900}h1{margin:0;font-size:25px}.sub{color:rgba(255,255,255,.86);margin-top:7px;line-height:1.6}
+.tabs{display:flex;gap:8px;overflow:auto;margin:14px 0;padding-bottom:4px}.tab{border:1px solid var(--line);background:var(--card);color:var(--text);padding:11px 13px;border-radius:999px;font-weight:900;white-space:nowrap;cursor:pointer}.tab.active{background:linear-gradient(135deg,var(--pink),var(--purple));color:white;border:none}
+.section{display:none}.section.active{display:block}.grid{display:grid;grid-template-columns:1fr;gap:12px}.card{background:rgba(20,24,39,.94);border:1px solid var(--line);border-radius:24px;padding:15px;box-shadow:0 16px 40px rgba(0,0,0,.22)}.title{display:flex;justify-content:space-between;gap:10px;align-items:center;font-weight:900;font-size:18px;margin-bottom:12px}.badge{padding:6px 9px;border-radius:999px;background:rgba(251,113,133,.14);color:var(--pink);font-size:12px;font-weight:900}.ex{background:var(--soft);border:1px solid var(--line);border-radius:18px;padding:14px}.ex h3{margin:0 0 8px}.muted{color:var(--muted);font-size:13px;line-height:1.65}.chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}.chip{font-size:11px;border:1px solid var(--line);padding:5px 8px;border-radius:999px;color:var(--muted);font-weight:800}.btn{display:block;width:100%;background:linear-gradient(135deg,var(--pink),var(--purple));color:white;border:none;border-radius:14px;padding:12px;font-weight:900;margin-top:10px;text-align:center;text-decoration:none}.warn{background:rgba(251,146,60,.12);border:1px solid rgba(251,146,60,.3);color:#fed7aa;border-radius:18px;padding:12px;line-height:1.7;font-size:13px}.illus{height:110px;border-radius:16px;background:linear-gradient(135deg,rgba(251,113,133,.18),rgba(56,189,248,.12));display:grid;place-items:center;margin-bottom:10px}.illus svg{width:120px;height:90px}.footer{text-align:center;color:var(--muted);font-size:12px;margin:18px 0}
+@media(min-width:760px){.grid{grid-template-columns:repeat(2,1fr)}.wide{grid-column:1/-1}}
+</style>
+</head>
+<body>
+<div class="page">
+<div class="hero"><div class="top"><div><h1>👩 رشاقة وتمارين للسيدات</h1><div class="sub">قوام صحي، شد الجسم، أرداف وفخذين، بطن، قاع الحوض، استقامة الظهر، وتمارين الوجه</div></div><a class="back" href="index.html">⬅ التطبيق</a></div></div>
+<div class="tabs">
+<button class="tab active" data-sec="glutes">🍑 الأرداف والفخذين</button>
+<button class="tab" data-sec="core">🔥 البطن والخصر</button>
+<button class="tab" data-sec="posture">🧍 القوام والصدر</button>
+<button class="tab" data-sec="pelvic">🌸 قاع الحوض</button>
+<button class="tab" data-sec="face">😊 الوجه والخدود</button>
+<button class="tab" data-sec="weekly">📅 خطة أسبوعية</button>
+</div>
+
+<section id="glutes" class="section active"><div class="grid" id="glutesList"></div></section>
+<section id="core" class="section"><div class="grid" id="coreList"></div></section>
+<section id="posture" class="section"><div class="grid" id="postureList"></div></section>
+<section id="pelvic" class="section"><div class="grid" id="pelvicList"></div></section>
+<section id="face" class="section"><div class="grid" id="faceList"></div></section>
+<section id="weekly" class="section">
+<div class="card wide"><div class="title"><span>📅 خطة أسبوعية سريعة</span><span class="badge">30 دقيقة</span></div>
+<div class="warn"><b>مهم:</b> النتائج السريعة تحتاج انتظام 4–6 أسابيع. التمرين يشد ويبرز العضلات ويحسن القوام، لكنه لا يغير حجم مناطق ليست عضلات بشكل مباشر. أي ألم أو خدر أو ضعف → توقفي فورًا.</div>
+</div>
+<div class="grid">
+<div class="card"><h3>اليوم 1</h3><p class="muted">Glutes + Legs + Core</p></div>
+<div class="card"><h3>اليوم 2</h3><p class="muted">Posture + Chest Lift + Face</p></div>
+<div class="card"><h3>اليوم 3</h3><p class="muted">Chair / Light Mobility</p></div>
+<div class="card"><h3>اليوم 4</h3><p class="muted">Glutes + Thighs + Pelvic Floor</p></div>
+<div class="card"><h3>اليوم 5</h3><p class="muted">Core + Posture + Stretching</p></div>
+</div>
+</section>
+
+<div class="footer">Women Fitness V13 • صحي وواقعي وآمن</div>
+</div>
+<script>
+const data={
+glutes:[
+["Glute Bridge","3 × 15","شد الأرداف ودعم أسفل الظهر","ابدئي ببطء، ارفعي الحوض وشدي الأرداف."],
+["Hip Thrust على كرسي","3 × 12","إبراز الأرداف","الظهر العلوي على كرسي ثابت، الحركة من الحوض."],
+["Side-Lying Leg Raise","3 × 15 لكل جهة","شد جانب الفخذ","ارفعي الرجل ببطء بدون لف الحوض."],
+["Clamshell","3 × 15 لكل جهة","تدوير الحوض والأرداف","ممتاز لشكل الأرداف واستقرار الحوض."],
+["Chair Squat","3 × 12","فخذين وأرداف","اجلسي وقومي من الكرسي بتحكم."],
+["Wall Sit","3 × 30 ثانية","شد الفخذين","الظهر على الجدار والركبة بدون ألم."]
+],
+core:[
+["Dead Bug","3 × 10 لكل جهة","بطن آمن","أفضل من Sit-ups للظهر."],
+["Plank","3 × 20–40 ثانية","Core وشد البطن","جسم مستقيم وتنفس طبيعي."],
+["Heel Taps","3 × 12 لكل جهة","خصر وبطن سفلي","ظهر ثابت على الأرض."],
+["Standing March","3 × 20","حرق خفيف","مناسب للبيت وبدون قفز."],
+["Side Plank Knees","2 × 20 ثانية","الخصر","نسخة خفيفة وآمنة."],
+["Vacuum Breathing","5 مرات","شد البطن العميق","تنفس واسحبي البطن للداخل بلطف."]
+],
+posture:[
+["Wall Slides","3 × 10","استقامة الظهر ورفع الأكتاف","رأس وظهر على الجدار."],
+["Face Pull Band","3 × 15","فتح الصدر وشد الظهر","مقاومة خفيفة."],
+["Doorway Chest Stretch","3 × 30 ثانية","رفع الصدر بصريًا","يفتح الكتف والصدر."],
+["Incline Push-up","3 × 10","دعم الصدر والكتف","لا يكبر الثدي نفسه، لكنه يحسن الرفع والقوام."],
+["Chin Tuck","3 × 10","رقبة للأمام","اسحبي الذقن للخلف بلطف."],
+["Scapular Squeeze","3 × 12","لوح الكتف","شدي لوحي الكتف للخلف والأسفل."]
+],
+pelvic:[
+["Kegel Slow Hold","10 مرات","قاع الحوض","شد 5 ثواني ثم راحة 5 ثواني."],
+["Quick Kegels","20 مرة","تحكم سريع","شد وإرخاء سريع بدون حبس النفس."],
+["Bridge + Kegel","3 × 10","أرداف + حوض","شدي قاع الحوض مع رفع الحوض."],
+["Deep Breathing","3 دقائق","استرخاء الحوض","لا تشدي طول الوقت، الاسترخاء مهم."],
+["Seated Pelvic Tilt","3 × 12","حوض وظهر","أثناء الجلوس على كرسي."],
+["Adductor Pillow Squeeze","3 × 12","داخل الفخذ والحوض","اعصري مخدة بين الركبتين بلطف."]
+],
+face:[
+["Cheek Lift Smile","3 × 10","الخدود","ابتسامة خفيفة وارفعِي الخدود."],
+["Jaw Release","2 دقيقة","الفك","افتحي وأغلقي الفك بلطف بدون ألم."],
+["Neck Stretch","2 × 30 ثانية","الرقبة","إطالة جانبية خفيفة."],
+["Face Massage","3 دقائق","الدورة الدموية","حركات للأعلى وليس للأسفل."],
+["Tongue Posture","يومي","دعم الفك","اللسان على سقف الحلق بلطف."],
+["Eye Relax","1 دقيقة","راحة الوجه","إغلاق العين والتنفس بعمق."]
+]
+};
+function icon(){return `<svg viewBox="0 0 160 100"><circle cx="80" cy="22" r="13" fill="#fb7185"/><path d="M80 38 L80 65" stroke="#fb7185" stroke-width="9" stroke-linecap="round"/><path d="M55 52 L105 52" stroke="#c084fc" stroke-width="8" stroke-linecap="round"/><path d="M80 65 L58 90" stroke="#38bdf8" stroke-width="8" stroke-linecap="round"/><path d="M80 65 L105 90" stroke="#38bdf8" stroke-width="8" stroke-linecap="round"/></svg>`}
+function render(sec){document.getElementById(sec+"List").innerHTML=data[sec].map(x=>`<div class="ex"><div class="illus">${icon()}</div><h3>${x[0]}</h3><div class="chips"><span class="chip">${x[1]}</span><span class="chip">${x[2]}</span></div><p class="muted">${x[3]}</p><button class="btn" onclick="this.textContent='✓ تم'">تحديد كمكتمل</button></div>`).join("")}
+["glutes","core","posture","pelvic","face"].forEach(render);
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".section").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.getElementById(b.dataset.sec).classList.add("active")})
+</script>
+</body>
+</html>

@@ -59,3 +59,9 @@
 - إصلاح زر Workout Dashboard في الصفحة الرئيسية.
 - استبدال onclick برابط HTML مباشر href لضمان الانتقال.
 - إضافة ?v=12 للرابط لتجاوز الكاش.
+
+
+## V13 - Women Fitness + Nutrition
+- إضافة women-fitness.html لتمارين السيدات الصحية.
+- إضافة nutrition-dashboard.html للوجبات والماء والكاميرا.
+- الكاميرا تعرض الصورة، والتحليل التلقائي الحقيقي يحتاج AI Vision + Backend لاحقاً.
