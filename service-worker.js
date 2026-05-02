@@ -1,4 +1,4 @@
-const CACHE_VERSION = "customised-app-v13-women-nutrition";
+const CACHE_VERSION = "customised-app-v14-fitness-food-judge";
 const FILES_TO_CACHE = [
   "./",
   "./index.html",
