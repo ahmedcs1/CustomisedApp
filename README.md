@@ -46,3 +46,10 @@
 - دعم لصق إحداثيات Google Maps مباشرة.
 - قاعدة aliases للأماكن غير الرسمية مثل سيلين وزكريت.
 - عرض مصدر النتيجة والإحداثيات.
+
+
+## V11 - Workout Dashboard
+- صفحة workout-dashboard.html.
+- أقسام مستقلة: Gym / Calisthenics / Chair Exercises / Back Care.
+- Timer + Start/Pause/Reset/Finish.
+- حفظ التقدم والسجل محلياً.

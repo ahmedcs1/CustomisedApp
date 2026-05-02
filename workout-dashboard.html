@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workout Dashboard - أحمد المحاميد</title>
+<style>
+:root{--bg:#070b10;--card:#111827;--card2:#172033;--text:#f8fafc;--muted:#94a3b8;--green:#4ade80;--blue:#38bdf8;--orange:#fb923c;--red:#f87171;--purple:#a78bfa;--line:rgba(255,255,255,.09)}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Tahoma,sans-serif;background:radial-gradient(circle at top right,rgba(56,189,248,.16),transparent 32%),radial-gradient(circle at bottom left,rgba(74,222,128,.12),transparent 30%),var(--bg);color:var(--text)}
+.page{max-width:1050px;margin:auto;padding:14px}
+.hero{background:linear-gradient(135deg,#111827,#0f766e,#0369a1);border-radius:28px;padding:20px;box-shadow:0 18px 45px rgba(0,0,0,.3)}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.back{color:white;text-decoration:none;background:rgba(255,255,255,.15);padding:10px 12px;border-radius:14px;font-weight:900;white-space:nowrap}
+h1{margin:0;font-size:25px}.sub{color:rgba(255,255,255,.85);margin-top:6px;line-height:1.6}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+.stat{background:rgba(255,255,255,.12);border-radius:18px;padding:12px;text-align:center}.stat b{display:block;font-size:22px}
+.tabs{display:flex;gap:8px;overflow:auto;margin:14px 0;padding-bottom:4px}
+.tab{border:1px solid var(--line);background:var(--card);color:var(--text);padding:11px 13px;border-radius:999px;font-weight:900;white-space:nowrap;cursor:pointer}
+.tab.active{background:linear-gradient(135deg,var(--green),var(--blue));color:#001018;border:none}
+.grid{display:grid;grid-template-columns:1fr;gap:13px}.card{background:rgba(17,24,39,.94);border:1px solid var(--line);border-radius:24px;padding:15px;box-shadow:0 18px 45px rgba(0,0,0,.25)}
+.card-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-weight:900;font-size:18px;gap:10px}.badge{padding:6px 9px;border-radius:999px;background:rgba(56,189,248,.14);color:var(--blue);font-size:12px;font-weight:900}
+.timer{font-size:42px;font-weight:900;text-align:center;direction:ltr;margin:8px 0;color:var(--green)}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:9px}button{font-family:inherit;border:none;border-radius:15px;padding:12px;font-size:15px;font-weight:900;cursor:pointer}
+.btn{background:linear-gradient(135deg,var(--green),var(--blue));color:#001018}.btn2{background:#1f2937;color:var(--text);border:1px solid var(--line)}.danger{background:rgba(248,113,113,.16);color:var(--red);border:1px solid rgba(248,113,113,.3)}
+.section{display:none}.section.active{display:block}.exercise-grid{display:grid;grid-template-columns:1fr;gap:12px}
+.ex{background:var(--card2);border:1px solid var(--line);border-radius:20px;overflow:hidden}.illus{height:145px;background:linear-gradient(135deg,rgba(56,189,248,.20),rgba(74,222,128,.12));display:grid;place-items:center}.illus svg{width:140px;height:120px}
+.ex-body{padding:13px}.ex h3{margin:0 0 6px}.muted{color:var(--muted);font-size:13px;line-height:1.55}.chips{display:flex;gap:6px;flex-wrap:wrap;margin:9px 0}.chip{font-size:11px;border:1px solid var(--line);padding:5px 8px;border-radius:999px;color:var(--muted);font-weight:800}
+.log{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-top:10px}.log input{width:100%;border:1px solid var(--line);background:#0b1220;color:var(--text);border-radius:12px;padding:10px;text-align:center;font-weight:900}.done{margin-top:9px;width:100%}
+.ex.completed{border-color:rgba(74,222,128,.55);background:rgba(74,222,128,.05)}.warn{background:rgba(251,146,60,.13);border:1px solid rgba(251,146,60,.30);color:#fed7aa;border-radius:18px;padding:12px;line-height:1.7;font-size:13px}
+.item{background:var(--card2);border:1px solid var(--line);border-radius:16px;padding:12px;display:flex;justify-content:space-between;margin-bottom:8px;gap:10px}.footer{text-align:center;color:var(--muted);font-size:12px;margin:18px 0}
+@media(min-width:760px){.grid{grid-template-columns:1.2fr .8fr}.exercise-grid{grid-template-columns:repeat(2,1fr)}.wide{grid-column:1/-1}}
+@media(max-width:520px){.page{padding:10px}.top{align-items:flex-start}.timer{font-size:36px}.stat b{font-size:18px}}
+</style>
+</head>
+<body>
+<div class="page">
+<div class="hero">
+  <div class="top">
+    <div><h1>💪 Workout Dashboard</h1><div class="sub">Gym + Calisthenics + Chair Exercises + Back Care</div></div>
+    <a class="back" href="index.html">⬅ التطبيق</a>
+  </div>
+  <div class="stats"><div class="stat"><b id="doneCount">0</b><span>مكتمل</span></div><div class="stat"><b id="totalCount">0</b><span>تمارين</span></div><div class="stat"><b id="progressPct">0%</b><span>التقدم</span></div></div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" data-sec="gym">🏋️ Gym</button>
+  <button class="tab" data-sec="calisthenics">🤸 Calisthenics</button>
+  <button class="tab" data-sec="chair">🪑 Chair</button>
+  <button class="tab" data-sec="backcare">🧘 Back Care</button>
+  <button class="tab" data-sec="history">📊 History</button>
+</div>
+
+<div class="grid">
+  <div class="card"><div class="card-title"><span>⏱️ Start Workout</span><span class="badge" id="activePlanName">Gym</span></div><div class="timer" id="timer">00:00</div><div class="controls"><button class="btn" id="startBtn">▶ Start</button><button class="btn2" id="pauseBtn">⏸ Pause</button><button class="btn2" id="resetBtn">↺ Reset</button><button class="danger" id="finishBtn">✅ Finish</button></div></div>
+  <div class="card"><div class="card-title"><span>⚠️ قواعد السلامة</span><span class="badge">مهم</span></div><div class="warn"><b>أوقف فورًا</b> إذا شعرت بألم الرجل أو خدر أو ضعف.<br>تجنب القفز والـ HIIT والأوزان الثقيلة حاليًا.<br>إذا حسيت طقطقة باللوح — خفف النطاق.</div></div>
+</div>
+
+<section id="gym" class="section active"><div class="card wide"><div class="card-title"><span>🏋️ Gym Plan</span><span class="badge">ظهر + أكتاف</span></div><div class="exercise-grid" id="gymList"></div></div></section>
+<section id="calisthenics" class="section"><div class="card wide"><div class="card-title"><span>🤸 Calisthenics</span><span class="badge">كاليستانيكس آمن</span></div><div class="exercise-grid" id="calisthenicsList"></div></div></section>
+<section id="chair" class="section"><div class="card wide"><div class="card-title"><span>🪑 Chair Exercises</span><span class="badge">أيام التعب</span></div><div class="exercise-grid" id="chairList"></div></div></section>
+<section id="backcare" class="section"><div class="card wide"><div class="card-title"><span>🧘 Back Care / Mobility</span><span class="badge">يومي</span></div><div class="exercise-grid" id="backcareList"></div></div></section>
+<section id="history" class="section"><div class="card wide"><div class="card-title"><span>📊 سجل التمارين</span><button class="danger" id="clearHistory">مسح السجل</button></div><div id="historyList"></div></div></section>
+
+<div class="footer">Workout Dashboard V11 • أحمد المحاميد</div>
+</div>
+
+<script>
+const plans={
+gym:[
+{name:"Face Pull",sets:"4",reps:"15",tag:"استقامة + لوح",note:"شد لوحي الكتف للخلف والأسفل. وزن خفيف.",type:"pull"},
+{name:"Seated Cable Row",sets:"3",reps:"12",tag:"ظهر وسط",note:"اجلس مستقيم واشد لبطنك.",type:"row"},
+{name:"Lat Pulldown - Front",sets:"3",reps:"12",tag:"ظهر علوي",note:"للأمام فقط، لا خلف الرأس.",type:"pull"},
+{name:"Reverse Fly",sets:"3",reps:"12",tag:"كتف خلفي",note:"وزن خفيف جدًا وتحكم بطيء.",type:"fly"},
+{name:"External Rotation Band",sets:"3",reps:"15",tag:"تأهيل اللوح",note:"كوعك ملاصق للجنب ومقاومة خفيفة.",type:"band"},
+{name:"Thoracic Extension",sets:"2",reps:"10",tag:"استقامة الظهر",note:"على الكرسي أو Foam Roller.",type:"mobility"}
+],
+calisthenics:[
+{name:"Incline Push-up",sets:"3",reps:"10",tag:"صدر + أكتاف",note:"ابدأ على طاولة أو جدار. آمن كبداية.",type:"push"},
+{name:"Wall Push-up",sets:"3",reps:"12",tag:"كاليستانيكس خفيف",note:"بديل سهل في أيام التعب.",type:"push"},
+{name:"Assisted Squat",sets:"3",reps:"10",tag:"رجلين",note:"استخدم كرسي أو مسكة للدعم.",type:"squat"},
+{name:"Wall Sit",sets:"3",reps:"30s",tag:"رجلين",note:"ظهر على الجدار، بدون ألم ركبة.",type:"wall"},
+{name:"Plank",sets:"3",reps:"30s",tag:"Core",note:"جسم مستقيم وتنفس طبيعي.",type:"plank"},
+{name:"Glute Bridge",sets:"3",reps:"15",tag:"أسفل ظهر",note:"شد المؤخرة وارفع الحوض ببطء.",type:"bridge"},
+{name:"Dead Bug",sets:"2",reps:"10/side",tag:"Core آمن",note:"ظهرك ثابت على الأرض.",type:"deadbug"},
+{name:"Bird Dog",sets:"2",reps:"10/side",tag:"عمود فقري",note:"اثبت 3 ثواني بدون لف الظهر.",type:"bird"}
+],
+chair:[
+{name:"Seated March",sets:"3",reps:"20",tag:"تنشيط",note:"ارفع الركبة بالتبادل وأنت جالس.",type:"chair"},
+{name:"Seated Knee Extension",sets:"3",reps:"15/side",tag:"ركبة",note:"مد الرجل للأمام ببطء.",type:"leg"},
+{name:"Seated Heel Raise",sets:"3",reps:"20",tag:"سمانة",note:"ارفع الكعبين وأنت جالس.",type:"heel"},
+{name:"Chair Squat",sets:"3",reps:"10",tag:"قوة",note:"اجلس وقم من الكرسي ببطء.",type:"squat"},
+{name:"Seated Scapular Squeeze",sets:"3",reps:"12",tag:"لوح",note:"شد لوحي الكتف للخلف.",type:"row"},
+{name:"Seated Neck Retraction",sets:"3",reps:"10",tag:"رقبة",note:"اسحب الذقن للخلف بلطف.",type:"neck"},
+{name:"Seated Cat-Cow",sets:"2",reps:"10",tag:"Mobility",note:"حركة لطيفة للعمود وأنت جالس.",type:"cat"},
+{name:"Seated Side Bend",sets:"2",reps:"8/side",tag:"إطالة",note:"ميل بسيط للجانب بدون ألم.",type:"stretch"}
+],
+backcare:[
+{name:"Chin Tuck",sets:"3",reps:"10",tag:"رقبة",note:"على الجدار أفضل.",type:"neck"},
+{name:"Wall Slides",sets:"3",reps:"10",tag:"استقامة",note:"رأس وكتف وظهر على الجدار.",type:"wall"},
+{name:"Bird Dog",sets:"2",reps:"10/side",tag:"عمود فقري",note:"اثبت 3 ثواني.",type:"bird"},
+{name:"Cat-Cow",sets:"2",reps:"10",tag:"Mobility",note:"حركة بطيئة مع تنفس.",type:"cat"},
+{name:"Hip Flexor Stretch",sets:"2",reps:"30s/side",tag:"حوض",note:"لا تضغط بقوة.",type:"stretch"},
+{name:"McKenzie Extension",sets:"1",reps:"10",tag:"راقب الرجل",note:"أوقف إذا زاد ألم الرجل.",type:"mckenzie"},
+{name:"Doorway Chest Stretch",sets:"2",reps:"30s",tag:"فتح الصدر",note:"مهم لاستقامة الظهر ورفع الأكتاف.",type:"stretch"},
+{name:"Thoracic Extension",sets:"2",reps:"10",tag:"استقامة الظهر",note:"على كرسي أو Foam Roller.",type:"mobility"}
+]
+};
+function icon(type){const color=type==="push"?"#4ade80":type==="squat"?"#fb923c":type==="neck"?"#a78bfa":"#38bdf8";return `<svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="34" r="18" fill="${color}"/><path d="M100 55 L100 95" stroke="${color}" stroke-width="12" stroke-linecap="round"/><path d="M70 72 L130 72" stroke="${color}" stroke-width="10" stroke-linecap="round"/><path d="M100 95 L72 135" stroke="${color}" stroke-width="10" stroke-linecap="round"/><path d="M100 95 L130 135" stroke="${color}" stroke-width="10" stroke-linecap="round"/><rect x="35" y="138" width="130" height="8" rx="4" fill="rgba(255,255,255,.22)"/></svg>`}
+let seconds=Number(localStorage.getItem("workoutSeconds")||0),interval=null,active="gym";const completed=JSON.parse(localStorage.getItem("completedExercises")||"{}");
+function fmt(s){return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
+function updateTimer(){timer.textContent=fmt(seconds);localStorage.setItem("workoutSeconds",seconds)}
+function start(){if(interval)return;interval=setInterval(()=>{seconds++;updateTimer()},1000)}
+function pause(){clearInterval(interval);interval=null}
+function reset(){pause();seconds=0;updateTimer()}
+function renderList(planKey){const list=document.getElementById(planKey+"List");list.innerHTML=plans[planKey].map((e,i)=>{const id=planKey+"_"+i;const isDone=completed[id];return `<div class="ex ${isDone?'completed':''}" id="${id}"><div class="illus">${icon(e.type)}</div><div class="ex-body"><h3>${e.name}</h3><div class="chips"><span class="chip">${e.tag}</span><span class="chip">${e.sets} Sets</span><span class="chip">${e.reps}</span></div><div class="muted">${e.note}</div><div class="log"><input placeholder="Set" value="${e.sets}"><input placeholder="Reps" value="${e.reps}"><input placeholder="KG"></div><button class="btn2 done" onclick="toggleDone('${id}')">${isDone?'✓ مكتمل':'تحديد كمكتمل'}</button></div></div>`}).join("")}
+function renderAll(){Object.keys(plans).forEach(renderList);updateProgress();renderHistory()}
+function toggleDone(id){completed[id]=!completed[id];localStorage.setItem("completedExercises",JSON.stringify(completed));renderAll()}
+function updateProgress(){const total=plans[active].length;const done=plans[active].map((_,i)=>completed[active+"_"+i]).filter(Boolean).length;doneCount.textContent=done;totalCount.textContent=total;progressPct.textContent=Math.round(done/total*100)+"%"}
+function finishWorkout(){pause();const total=plans[active].length;const done=plans[active].map((_,i)=>completed[active+"_"+i]).filter(Boolean).length;const history=JSON.parse(localStorage.getItem("workoutHistory")||"[]");history.unshift({date:new Date().toLocaleString("ar-QA"),plan:active,duration:fmt(seconds),done,total});localStorage.setItem("workoutHistory",JSON.stringify(history.slice(0,30)));alert("تم حفظ التمرين");renderHistory()}
+function renderHistory(){const h=JSON.parse(localStorage.getItem("workoutHistory")||"[]");historyList.innerHTML=h.length?h.map(x=>`<div class="item"><div><b>${x.plan}</b><div class="muted">${x.date}</div></div><div>${x.done}/${x.total} • ${x.duration}</div></div>`).join(""):`<div class="muted">لا يوجد سجل بعد.</div>`}
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".section").forEach(x=>x.classList.remove("active"));b.classList.add("active");active=b.dataset.sec;document.getElementById(active).classList.add("active");activePlanName.textContent=b.textContent;updateProgress()});
+startBtn.onclick=start;pauseBtn.onclick=pause;resetBtn.onclick=reset;finishBtn.onclick=finishWorkout;clearHistory.onclick=()=>{localStorage.removeItem("workoutHistory");renderHistory()};
+updateTimer();renderAll();
+</script>
+</body>
+</html>
