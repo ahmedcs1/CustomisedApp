@@ -1,4 +1,4 @@
-const CACHE_VERSION = "customised-app-v19-hard-refresh-fix";
+const CACHE_VERSION = "customised-app-v20-stable-appjs-fix";
 const LOCAL_FILES = [
   "./",
   "./index.html",

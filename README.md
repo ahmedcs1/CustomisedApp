@@ -106,3 +106,11 @@
 - أزرار الصلاحيات والشروط أصبحت inline ومضمونة حتى لو حدث خطأ في app.js.
 - إصلاح احترازي لأزرار مشاركة الرحلات التي قد تسبب خطأ JavaScript.
 - Service Worker يستخدم Network First للصفحات و JS مع cache:no-store.
+
+
+## V20 - Stable App.js Fix
+- إصلاح خطأ JavaScript في زر مشاركة نتيجة الرحلات.
+- إصلاح initSettings الذي كان يستخدم prayerMethod بشكل غير صحيح.
+- جعل refreshAll أكثر ثباتًا بحيث لا يوقف التطبيق إذا فشل جزء واحد.
+- جعل setText آمنًا إذا كان العنصر غير موجود.
+- فحص app.js باستخدام node --check قبل التسليم.

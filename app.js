@@ -21,10 +21,10 @@ let sleepHours=Number(localStorage.getItem("sleepHours")||7);
 let prayerTimes={}, alertTimers=[], deferredPrompt, qiblaBearing=0, smoothedHeading=null;
 const el=id=>document.getElementById(id);
 function toEnglish(v){return String(v).replace(/[٠-٩]/g,d=>"٠١٢٣٤٥٦٧٨٩".indexOf(d)).replace(/[۰-۹]/g,d=>"۰۱۲۳۴۵۶۷۸۹".indexOf(d))}
-function setText(id,v){el(id).textContent=toEnglish(v)}
+function setText(id,v){const node=el(id); if(node) node.textContent=toEnglish(v)}
 function initTabs(){document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".section").forEach(x=>x.classList.remove("active"));b.classList.add("active");el(b.dataset.tab).classList.add("active")})}
 function initCity(){citySelect.innerHTML="";CITIES.forEach((c,i)=>{let o=document.createElement("option");o.value=i;o.textContent=c.name;if(c.label===selectedCity.label&&Number(c.lat).toFixed(3)===Number(selectedCity.lat).toFixed(3))o.selected=true;citySelect.appendChild(o)});citySelect.onchange=async()=>{selectedCity=CITIES[Number(citySelect.value)];localStorage.setItem("selectedCity",JSON.stringify(selectedCity));smoothedHeading=null;await refreshAll()}}
-function initSettings(){prayerMethod.value=prayerMethod;el("prayerMethod").value=prayerMethod;el("wakeBeforeFajr").value=wakeBeforeFajr;el("sleepHours").value=sleepHours;el("notifyBefore").checked=alertSettings.before;el("notifyAtTime").checked=alertSettings.atTime;el("saveSettings").onclick=async()=>{prayerMethod=el("prayerMethod").value;wakeBeforeFajr=Number(el("wakeBeforeFajr").value||35);sleepHours=Number(el("sleepHours").value||7);alertSettings.before=el("notifyBefore").checked;alertSettings.atTime=el("notifyAtTime").checked;localStorage.setItem("prayerMethod",prayerMethod);localStorage.setItem("wakeBeforeFajr",wakeBeforeFajr);localStorage.setItem("sleepHours",sleepHours);localStorage.setItem("alertSettings",JSON.stringify(alertSettings));await refreshAll();alert("تم حفظ الإعدادات")}}
+function initSettings(){el("prayerMethod").value=prayerMethod;el("wakeBeforeFajr").value=wakeBeforeFajr;el("sleepHours").value=sleepHours;el("notifyBefore").checked=alertSettings.before;el("notifyAtTime").checked=alertSettings.atTime;el("saveSettings").onclick=async()=>{prayerMethod=el("prayerMethod").value;wakeBeforeFajr=Number(el("wakeBeforeFajr").value||35);sleepHours=Number(el("sleepHours").value||7);alertSettings.before=el("notifyBefore").checked;alertSettings.atTime=el("notifyAtTime").checked;localStorage.setItem("prayerMethod",prayerMethod);localStorage.setItem("wakeBeforeFajr",wakeBeforeFajr);localStorage.setItem("sleepHours",sleepHours);localStorage.setItem("alertSettings",JSON.stringify(alertSettings));await refreshAll();alert("تم حفظ الإعدادات")}}
 function applyDark(){document.body.classList.toggle("dark",darkMode);darkModeButton.textContent=darkMode?"☀️ الوضع الفاتح":"🌙 الوضع الداكن"}
 darkModeButton.onclick=()=>{darkMode=!darkMode;localStorage.setItem("darkMode",String(darkMode));applyDark()};
 window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e;installButton.style.display="block"});
@@ -39,7 +39,11 @@ function fmtShort(t){if(!t)return"--";let c=String(t).replace(/\s?\(.+\)/,"").tr
 function fmtDate(d){return toEnglish(d.toLocaleDateString("ar-QA-u-nu-latn",{weekday:"long",year:"numeric",month:"long",day:"numeric"}))}
 function fmtHijri(d){try{return toEnglish(new Intl.DateTimeFormat("ar-SA-u-ca-islamic-nu-latn",{weekday:"long",year:"numeric",month:"long",day:"numeric"}).format(d))}catch{return"--"}}
 function duration(ms){let s=Math.floor(ms/1000),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;return toEnglish(`${h} ساعة ${m} دقيقة ${sec} ثانية`)}
-function updateClockSun(){let now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate()),tom=new Date(today);tom.setDate(today.getDate()+1);let sr=decDate(today,sunTime(today,true)),ss=decDate(today,sunTime(today,false)),srt=decDate(tom,sunTime(tom,true)),sst=decDate(tom,sunTime(tom,false));setText("currentTime",fmtTime(now));setText("currentDate",fmtDate(now));setText("hijriDate",fmtHijri(now));setText("sunriseToday",fmtTime(sr));setText("sunsetToday",fmtTime(ss));setText("dayLengthToday",duration(ss-sr));setText("sunriseTomorrow",fmtTime(srt));setText("sunsetTomorrow",fmtTime(sst))}
+function updateClockSun(){let now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate()),tom=new Date(today);tom.setDate(today.getDate()+1);let srH=sunTime(today,true), ssH=sunTime(today,false), srtH=sunTime(tom,true), sstH=sunTime(tom,false);
+let sr=srH==null?null:decDate(today,srH), ss=ssH==null?null:decDate(today,ssH), srt=srtH==null?null:decDate(tom,srtH), sst=sstH==null?null:decDate(tom,sstH);
+setText("currentTime",fmtTime(now));setText("currentDate",fmtDate(now));setText("hijriDate",fmtHijri(now));
+setText("sunriseToday",sr?fmtTime(sr):"--");setText("sunsetToday",ss?fmtTime(ss):"--");
+setText("dayLengthToday",(sr&&ss)?duration(ss-sr):"--");setText("sunriseTomorrow",srt?fmtTime(srt):"--");setText("sunsetTomorrow",sst?fmtTime(sst):"--")}
 async function loadPrayer(){try{let ts=Math.floor(Date.now()/1000),url=`https://api.aladhan.com/v1/timings/${ts}?latitude=${selectedCity.lat}&longitude=${selectedCity.lng}&method=${prayerMethod}`;let data=await(await fetch(url)).json(),t=data.data.timings;prayerTimes={Fajr:fmtShort(t.Fajr),Sunrise:fmtShort(t.Sunrise),Dhuhr:fmtShort(t.Dhuhr),Asr:fmtShort(t.Asr),Maghrib:fmtShort(t.Maghrib),Isha:fmtShort(t.Isha)};["Fajr","Sunrise","Dhuhr","Asr","Maghrib","Isha"].forEach((k,i)=>setText(["fajr","sunrisePrayer","dhuhr","asr","maghrib","isha"][i],prayerTimes[k]));let methodName={2:"MWL",3:"Umm Al-Qura",4:"Qatar"}[prayerMethod]||"Custom";prayerSource.textContent=selectedCity.label+" • طريقة الحساب: "+methodName;planSleep();scheduleAlerts()}catch{prayerSource.textContent="تعذر التحديث"}}
 function wdesc(c){return({0:"سماء صافية",1:"غالباً صافي",2:"غائم جزئياً",3:"غائم",45:"ضباب",48:"ضباب كثيف",51:"رذاذ خفيف",53:"رذاذ متوسط",55:"رذاذ كثيف",61:"مطر خفيف",63:"مطر متوسط",65:"مطر غزير",80:"زخات خفيفة",81:"زخات متوسطة",82:"زخات قوية",95:"عواصف رعدية"})[c]||"حالة غير معروفة"}
 async function loadWeather(){try{weatherStatus.textContent="مباشر";let url=`https://api.open-meteo.com/v1/forecast?latitude=${selectedCity.lat}&longitude=${selectedCity.lng}&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,precipitation&timezone=auto`;let d=await(await fetch(url)).json(),c=d.current;setText("temperature",`${Math.round(c.temperature_2m)}°C`);weatherDescription.textContent=wdesc(c.weather_code);setText("apparentTemp",`${Math.round(c.apparent_temperature)}°C`);setText("humidity",`${c.relative_humidity_2m}%`);setText("windSpeed",`${Math.round(c.wind_speed_10m)} كم/س`);setText("precipitation",`${c.precipitation||0} mm`);setText("weatherTime",c.time?c.time.replace("T"," "):"--")}catch{weatherStatus.textContent="غير متاح";weatherDescription.textContent="تعذر جلب الطقس"}}
@@ -62,7 +66,13 @@ function getDuas(){let custom=JSON.parse(localStorage.getItem("customDuas")||"[]
 function renderDuas(){let q=(duaSearch.value||"").trim();let list=getDuas().filter(d=>!q||(`${d.title} ${d.category} ${d.text}`).includes(q));duaList.innerHTML=list.map((d,i)=>`<div class="dua-card"><div class="dua-title">${toEnglish(i+1)}. ${d.title} <span class="tag">${d.category||"عام"}</span></div><div class="dua-text">${d.text}</div></div>`).join("")}
 addDuaBtn.onclick=()=>{let title=duaTitle.value.trim()||"دعاء جديد",category=duaCategory.value.trim()||"خاص",text=duaText.value.trim();if(!text){alert("اكتب نص الدعاء أولاً");return}let custom=JSON.parse(localStorage.getItem("customDuas")||"[]");custom.unshift({title,category,text});localStorage.setItem("customDuas",JSON.stringify(custom));duaTitle.value=duaCategory.value=duaText.value="";renderDuas()}
 duaSearch.oninput=renderDuas;
-async function refreshAll(){cityPill.textContent=selectedCity.label;updateClockSun();updateQibla();await Promise.all([loadPrayer(),loadWeather()])}
+async function refreshAll(){
+  try{ cityPill.textContent=selectedCity.label || "الدوحة"; }catch(e){}
+  try{ updateClockSun(); }catch(e){ console.warn("Clock/Sun failed", e); }
+  try{ updateQibla(); }catch(e){ console.warn("Qibla failed", e); }
+  try{ await loadPrayer(); }catch(e){ console.warn("Prayer failed", e); }
+  try{ await loadWeather(); }catch(e){ console.warn("Weather failed", e); }
+}
 initTabs();initCity();initSettings();applyDark();updateAlertUI();renderAdhkar();renderDuas();refreshAll();setInterval(updateClockSun,1000);setInterval(loadWeather,20*60*1000);setInterval(loadPrayer,60*60*1000);
 
 
@@ -184,7 +194,18 @@ async function searchTripLocation(){
           <div class="dua-actions">
             <button class="small btn" onclick="selectTripAsCity('${safeName}', ${place.latitude}, ${place.longitude})">اعتمد هذا الموقع في التطبيق</button>
             <a class="small tab" style="text-decoration:none" target="_blank" href="https://www.google.com/maps/search/?api=1&query=${place.latitude},${place.longitude}">فتح في الخريطة</a>
-        <button class="small btn" onclick="shareTripResultWhatsApp('${String(placeName).replace(/'/g,'\'')}', '${Math.round(w.temperature_2m)}', '${Math.round(w.apparent_temperature)}', '${Math.round(w.wind_speed_10m)}', '${Math.round(w.wind_gusts_10m || 0)}', '${w.precipitation || 0}', '${String(decision.title).replace(/'/g,'\'')}', '${Math.max(0, Math.round(decision.score))}', '${String(decision.reasons.join('\n')).replace(/'/g,'\'')}')">📲 إرسال النتيجة واتساب</button>
+        <button class="small btn"
+          data-place="${htmlAttrSafe(placeName)}"
+          data-temp="${htmlAttrSafe(Math.round(w.temperature_2m))}"
+          data-apparent="${htmlAttrSafe(Math.round(w.apparent_temperature))}"
+          data-wind="${htmlAttrSafe(Math.round(w.wind_speed_10m))}"
+          data-gusts="${htmlAttrSafe(Math.round(w.wind_gusts_10m || 0))}"
+          data-rain="${htmlAttrSafe(w.precipitation || 0)}"
+          data-title="${htmlAttrSafe(decision.title)}"
+          data-score="${htmlAttrSafe(Math.max(0, Math.round(decision.score)))}"
+          data-notes="${htmlAttrSafe(decision.reasons.join('\n'))}"
+          onclick="shareTripFromButton(this)">📲 إرسال النتيجة واتساب</button>
+        <button class="small btn" onclick="shareToWhatsApp('🧺 فحص الرحلة والشوي متاح داخل التطبيق. افتح التطبيق لمشاهدة التفاصيل.')">📲 إرسال واتساب</button>
           </div>
         </div>
       `);
@@ -323,7 +344,18 @@ function renderTripCard(place, w){
       <div class="dua-actions">
         <button class="small btn" onclick="selectTripAsCity('${safeName}', ${place.latitude}, ${place.longitude}, '${place.country || ""}')">اعتمد هذا الموقع في التطبيق</button>
         <a class="small tab" style="text-decoration:none" target="_blank" href="https://www.google.com/maps/search/?api=1&query=${place.latitude},${place.longitude}">فتح في الخريطة</a>
-        <button class="small btn" onclick="shareTripResultWhatsApp('${String(placeName).replace(/'/g,'\'')}', '${Math.round(w.temperature_2m)}', '${Math.round(w.apparent_temperature)}', '${Math.round(w.wind_speed_10m)}', '${Math.round(w.wind_gusts_10m || 0)}', '${w.precipitation || 0}', '${String(decision.title).replace(/'/g,'\'')}', '${Math.max(0, Math.round(decision.score))}', '${String(decision.reasons.join('\n')).replace(/'/g,'\'')}')">📲 إرسال النتيجة واتساب</button>
+        <button class="small btn"
+          data-place="${htmlAttrSafe(placeName)}"
+          data-temp="${htmlAttrSafe(Math.round(w.temperature_2m))}"
+          data-apparent="${htmlAttrSafe(Math.round(w.apparent_temperature))}"
+          data-wind="${htmlAttrSafe(Math.round(w.wind_speed_10m))}"
+          data-gusts="${htmlAttrSafe(Math.round(w.wind_gusts_10m || 0))}"
+          data-rain="${htmlAttrSafe(w.precipitation || 0)}"
+          data-title="${htmlAttrSafe(decision.title)}"
+          data-score="${htmlAttrSafe(Math.max(0, Math.round(decision.score)))}"
+          data-notes="${htmlAttrSafe(decision.reasons.join('\n'))}"
+          onclick="shareTripFromButton(this)">📲 إرسال النتيجة واتساب</button>
+        <button class="small btn" onclick="shareToWhatsApp('🧺 فحص الرحلة والشوي متاح داخل التطبيق. افتح التطبيق لمشاهدة التفاصيل.')">📲 إرسال واتساب</button>
       </div>
     </div>
   `;
@@ -561,3 +593,36 @@ setTimeout(()=>{
   const acceptBtn = document.getElementById("acceptTermsButton");
   if(acceptBtn) acceptBtn.addEventListener("click", acceptTerms);
 }, 800);
+
+
+
+/* ===== V20 Safe Trip WhatsApp Share ===== */
+function htmlAttrSafe(v){
+  return String(v ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function shareTripFromButton(btn){
+  const msg =
+`🧺 فحص الرحلة والشوي
+
+المكان: ${btn.dataset.place || "--"}
+النتيجة: ${btn.dataset.title || "--"}
+التقييم: ${btn.dataset.score || "--"}/100
+
+الحرارة: ${btn.dataset.temp || "--"}°C
+الإحساس: ${btn.dataset.apparent || "--"}°C
+الرياح: ${btn.dataset.wind || "--"} كم/س
+الهبات: ${btn.dataset.gusts || "--"} كم/س
+المطر: ${btn.dataset.rain || "--"} mm
+
+الملاحظات:
+${btn.dataset.notes || "--"}
+
+تم الإرسال من تطبيق أحمد المحاميد.`;
+  shareToWhatsApp(msg);
+}
