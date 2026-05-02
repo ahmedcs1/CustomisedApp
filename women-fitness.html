@@ -14,7 +14,7 @@
 <body>
 <div class="page">
 <div class="hero"><div class="top"><div><h1>👩 رشاقة وتمارين للسيدات</h1><div class="sub">جدول يومي + Gym/Home + تقييم الجهد + إنجاز يومي</div></div><a class="back" href="index.html">⬅ التطبيق</a></div>
-<div class="stats"><div class="stat"><b id="doneCount">0</b><span>مكتمل</span></div><div class="stat"><b id="totalCount">0</b><span>تمارين اليوم</span></div><div class="stat"><b id="scorePct">0%</b><span>إنجاز</span></div></div></div>
+<div class="stats"><div class="stat"><b id="doneCount">0</b><span>مكتمل</span></div><div class="stat"><b id="totalCount">0</b><span>تمارين اليوم</span></div><div class="stat"><b id="scorePct">0%</b><span>إنجاز</span></div></div><button class="btn" onclick="shareWomenWorkoutWhatsApp()">📲 إرسال إنجاز اليوم واتساب</button></div>
 <div class="tabs"><button class="tab active" data-sec="daily">📅 الجدول اليومي</button><button class="tab" data-sec="gym">🏋️ Gym Plan</button><button class="tab" data-sec="home">🏠 Home Plan</button><button class="tab" data-sec="pelvic">🌸 قاع الحوض</button><button class="tab" data-sec="face">😊 الوجه</button><button class="tab" data-sec="history">📊 السجل</button></div>
 <section id="daily" class="section active"><div class="card wide"><div class="title"><span>📅 خطة الأسبوع المثالية</span><span class="badge">Women V14</span></div><div class="warn"><b>تنبيه:</b> التمارين تحسن القوام، الشد، إبراز العضلات، والثقة. لا يوجد تمرين يغيّر حجم الثدي نفسه، لكن تمارين الصدر والقوام تحسن الرفع والشكل بصريًا.</div><div id="weekPlan"></div></div></section>
 <section id="gym" class="section"><div class="grid" id="gymList"></div></section>
@@ -38,5 +38,27 @@ function clearHistory(){localStorage.removeItem("womenHistory");renderHistory()}
 function renderAll(){renderWeek();["gym","home","pelvic","face"].forEach(renderList);renderHistory();updateStats()}
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".section").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.getElementById(b.dataset.sec).classList.add("active");updateStats()});
 renderAll();
+
+function shareWomenWorkoutWhatsApp(){
+  const activeSec = document.querySelector(".section.active").id;
+  const list = plans[activeSec] || [];
+  let msg = "👩 تقرير رشاقة السيدات - إنجاز اليوم\n\n";
+  msg += "القسم: " + activeSec + "\n";
+
+  if(list.length){
+    const done = list.map((_,i)=>completed[activeSec+"_"+i]).filter(Boolean).length;
+    const pct = Math.round(done/list.length*100);
+    msg += `الإنجاز: ${done}/${list.length} (${pct}%)\n\n`;
+    msg += "التمارين:\n";
+    msg += list.map((x,i)=> (completed[activeSec+"_"+i] ? "✅ " : "⬜ ") + x[0] + " - " + x[1] + " - " + x[3]).join("\n");
+  } else {
+    msg += "الخطة الأسبوعية:\n";
+    msg += week.map(x=>`• ${x[0]}: ${x[1]}`).join("\n");
+  }
+
+  msg += "\n\nملاحظة: أي ألم أو خدر أو ضعف → توقفي فورًا.";
+  window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
+}
+
 </script>
 </body></html>

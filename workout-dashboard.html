@@ -52,7 +52,7 @@ h1{margin:0;font-size:25px}.sub{color:rgba(255,255,255,.85);margin-top:6px;line-
 </div>
 
 <div class="grid">
-  <div class="card"><div class="card-title"><span>⏱️ Start Workout</span><span class="badge" id="activePlanName">Gym</span></div><div class="timer" id="timer">00:00</div><div class="controls"><button class="btn" id="startBtn">▶ Start</button><button class="btn2" id="pauseBtn">⏸ Pause</button><button class="btn2" id="resetBtn">↺ Reset</button><button class="danger" id="finishBtn">✅ Finish</button></div></div>
+  <div class="card"><div class="card-title"><span>⏱️ Start Workout</span><span class="badge" id="activePlanName">Gym</span></div><div class="timer" id="timer">00:00</div><div class="controls"><button class="btn" id="startBtn">▶ Start</button><button class="btn2" id="pauseBtn">⏸ Pause</button><button class="btn2" id="resetBtn">↺ Reset</button><button class="danger" id="finishBtn">✅ Finish</button><button class="btn" id="shareWorkoutBtn">📲 إرسال واتساب</button></div></div>
   <div class="card"><div class="card-title"><span>⚠️ قواعد السلامة</span><span class="badge">مهم</span></div><div class="warn"><b>أوقف فورًا</b> إذا شعرت بألم الرجل أو خدر أو ضعف.<br>تجنب القفز والـ HIIT والأوزان الثقيلة حاليًا.<br>إذا حسيت طقطقة باللوح — خفف النطاق.</div></div>
 </div>
 
@@ -122,6 +122,31 @@ function renderHistory(){const h=JSON.parse(localStorage.getItem("workoutHistory
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".section").forEach(x=>x.classList.remove("active"));b.classList.add("active");active=b.dataset.sec;document.getElementById(active).classList.add("active");activePlanName.textContent=b.textContent;updateProgress()});
 startBtn.onclick=start;pauseBtn.onclick=pause;resetBtn.onclick=reset;finishBtn.onclick=finishWorkout;clearHistory.onclick=()=>{localStorage.removeItem("workoutHistory");renderHistory()};
 updateTimer();renderAll();
+
+function shareWorkoutWhatsApp(){
+  const total = plans[active].length;
+  const done = plans[active].map((_,i)=>completed[active+"_"+i]).filter(Boolean).length;
+  const pct = Math.round(done / total * 100);
+  const doneNames = plans[active].map((e,i)=>completed[active+"_"+i] ? "✅ " + e.name : "⬜ " + e.name).join("\n");
+  const msg =
+`💪 Workout Dashboard - تقرير تمرين اليوم
+
+الخطة: ${active}
+المدة: ${fmt(seconds)}
+الإنجاز: ${done}/${total} (${pct}%)
+
+التمارين:
+${doneNames}
+
+ملاحظة:
+أوقف فورًا إذا شعرت بألم الرجل أو خدر أو ضعف.`;
+
+  window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
+}
+if(typeof shareWorkoutBtn !== "undefined"){
+  shareWorkoutBtn.onclick = shareWorkoutWhatsApp;
+}
+
 </script>
 </body>
 </html>

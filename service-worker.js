@@ -1,4 +1,4 @@
-const CACHE_VERSION = "customised-app-v14-fitness-food-judge";
+const CACHE_VERSION = "customised-app-v15-workout-whatsapp";
 const FILES_TO_CACHE = [
   "./",
   "./index.html",
