@@ -408,7 +408,7 @@ setTimeout(()=>{
 
 /* ===== V16 Local WhatsApp Share Buttons ===== */
 function shareToWhatsApp(message){
-  window.open("https://wa.me/?text=" + encodeURIComponent(message), "_blank");
+  safeOpenExternal("https://wa.me/?text=" + encodeURIComponent(message));
 }
 
 function getTextSafe(id){
@@ -460,4 +460,11 @@ ${notes}
 
 تم الإرسال من تطبيق أحمد المحاميد.`;
   shareToWhatsApp(msg);
+}
+
+
+/* ===== V17 Security Clean Helpers ===== */
+function safeOpenExternal(url){
+  const w = window.open(url, "_blank", "noopener,noreferrer");
+  if(w) w.opener = null;
 }
