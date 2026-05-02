@@ -53,3 +53,9 @@
 - أقسام مستقلة: Gym / Calisthenics / Chair Exercises / Back Care.
 - Timer + Start/Pause/Reset/Finish.
 - حفظ التقدم والسجل محلياً.
+
+
+## V12 - Workout Dashboard Link Fix
+- إصلاح زر Workout Dashboard في الصفحة الرئيسية.
+- استبدال onclick برابط HTML مباشر href لضمان الانتقال.
+- إضافة ?v=12 للرابط لتجاوز الكاش.

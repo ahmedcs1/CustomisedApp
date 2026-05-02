@@ -1,4 +1,4 @@
-const CACHE_VERSION = "customised-app-v11-workout-dashboard";
+const CACHE_VERSION = "customised-app-v12-workout-link-fix";
 const FILES_TO_CACHE = [
   "./",
   "./index.html",
