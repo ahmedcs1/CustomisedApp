@@ -96,3 +96,13 @@
 - إضافة صفحة terms.html مختصرة.
 - تحسين Service Worker ليجلب HTML/JS من الشبكة أولًا ويتجنب النسخ القديمة.
 - ملاحظة: الشروط ليست استشارة قانونية ولا تضمن حماية مطلقة في كل دولة.
+
+
+## V19 - Hard Refresh Fix
+- زر تحديث قوي inline داخل index.html لا يعتمد على app.js.
+- يمسح كل Cache Storage.
+- يلغي تسجيل Service Workers القديمة.
+- يعيد فتح التطبيق بـ ?v=19&t=timestamp.
+- أزرار الصلاحيات والشروط أصبحت inline ومضمونة حتى لو حدث خطأ في app.js.
+- إصلاح احترازي لأزرار مشاركة الرحلات التي قد تسبب خطأ JavaScript.
+- Service Worker يستخدم Network First للصفحات و JS مع cache:no-store.
