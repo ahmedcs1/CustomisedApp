@@ -1,7 +1,7 @@
 {
-  "name": "Customised App V20 - أحمد المحاميد",
+  "name": "Customised App V21 - أحمد المحاميد",
   "short_name": "Ahmad App",
-  "start_url": "./index.html?v=20",
+  "start_url": "./index.html?v=21",
   "display": "standalone",
   "background_color": "#020617",
   "theme_color": "#0f172a",

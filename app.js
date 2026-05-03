@@ -146,6 +146,7 @@ async function searchTripLocation(){
   if(!input || !results) return;
 
   const query = input.value.trim();
+  const tripDate = (document.getElementById("tripDateInput") || {}).value || new Date().toISOString().slice(0,10);
   if(!query){
     alert("اكتب اسم المكان أولاً");
     return;
@@ -177,6 +178,7 @@ async function searchTripLocation(){
         <div class="dua-card ${decision.className}">
           <div class="trip-decision">${decision.title}</div>
           <div class="dua-title">${placeName}</div>
+      <div class="dua-text"><strong>تاريخ الفحص:</strong> ${toEnglish(w.trip_date || new Date().toISOString().slice(0,10))} • ${w.trip_time_label || "الآن"}</div>
           <div class="mini-grid">
             <div class="mini"><div>الحرارة</div><div>${toEnglish(Math.round(w.temperature_2m))}°C</div></div>
             <div class="mini"><div>الإحساس</div><div>${toEnglish(Math.round(w.apparent_temperature))}°C</div></div>
@@ -196,6 +198,7 @@ async function searchTripLocation(){
             <a class="small tab" style="text-decoration:none" target="_blank" href="https://www.google.com/maps/search/?api=1&query=${place.latitude},${place.longitude}">فتح في الخريطة</a>
         <button class="small btn"
           data-place="${htmlAttrSafe(placeName)}"
+          data-date="${htmlAttrSafe(w.trip_date || new Date().toISOString().slice(0,10))}"
           data-temp="${htmlAttrSafe(Math.round(w.temperature_2m))}"
           data-apparent="${htmlAttrSafe(Math.round(w.apparent_temperature))}"
           data-wind="${htmlAttrSafe(Math.round(w.wind_speed_10m))}"
@@ -233,33 +236,7 @@ setTimeout(()=>{
 
 
 
-/* ===== V8 Auto Cache Refresh Button ===== */
-async function forceUpdateApp(){
-  try{
-    const btn = document.getElementById("forceUpdateButton");
-    if(btn) btn.textContent = "⏳ جاري التحديث...";
 
-    if("caches" in window){
-      const keys = await caches.keys();
-      await Promise.all(keys.map(key => caches.delete(key)));
-    }
-
-    if("serviceWorker" in navigator){
-      const regs = await navigator.serviceWorker.getRegistrations();
-      await Promise.all(regs.map(reg => reg.update()));
-    }
-
-    const cleanUrl = window.location.origin + window.location.pathname + "?v=" + Date.now();
-    window.location.replace(cleanUrl);
-  }catch(e){
-    window.location.reload(true);
-  }
-}
-
-setTimeout(()=>{
-  const btn = document.getElementById("forceUpdateButton");
-  if(btn) btn.addEventListener("click", forceUpdateApp);
-}, 500);
 
 
 
@@ -311,12 +288,42 @@ function findKnownQatarPlaces(query){
   );
 }
 
-async function getWeatherForTripPlace(place){
-  const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${place.latitude}&longitude=${place.longitude}&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,wind_gusts_10m,precipitation&timezone=auto`;
-  const wRes = await fetch(weatherUrl);
-  const wData = await wRes.json();
-  return wData.current;
+
+async function getWeatherForTripPlace(place, dateStr){
+  const todayStr = new Date().toISOString().slice(0,10);
+  const selectedDate = dateStr || todayStr;
+
+  if(selectedDate === todayStr){
+    const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${place.latitude}&longitude=${place.longitude}&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,wind_gusts_10m,precipitation&timezone=auto`;
+    const wRes = await fetch(weatherUrl);
+    const wData = await wRes.json();
+    const c = wData.current;
+    c.trip_date = selectedDate;
+    c.trip_time_label = "الآن";
+    return c;
+  }
+
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${place.latitude}&longitude=${place.longitude}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,wind_gusts_10m_max,relative_humidity_2m_mean&timezone=auto&start_date=${selectedDate}&end_date=${selectedDate}`;
+  const res = await fetch(url);
+  const data = await res.json();
+  const d = data.daily || {};
+  const maxT = Number(d.temperature_2m_max?.[0] ?? 0);
+  const minT = Number(d.temperature_2m_min?.[0] ?? maxT);
+  const temp = Math.round((maxT + minT) / 2);
+
+  return {
+    temperature_2m: temp,
+    apparent_temperature: temp,
+    relative_humidity_2m: Number(d.relative_humidity_2m_mean?.[0] ?? 0),
+    weather_code: Number(d.weather_code?.[0] ?? 0),
+    wind_speed_10m: Number(d.wind_speed_10m_max?.[0] ?? 0),
+    wind_gusts_10m: Number(d.wind_gusts_10m_max?.[0] ?? 0),
+    precipitation: Number(d.precipitation_sum?.[0] ?? 0),
+    trip_date: selectedDate,
+    trip_time_label: "توقعات اليوم"
+  };
 }
+
 
 function renderTripCard(place, w){
   const decision = buildTripDecision(w);
@@ -327,6 +334,7 @@ function renderTripCard(place, w){
     <div class="dua-card ${decision.className}">
       <div class="trip-decision">${decision.title}</div>
       <div class="dua-title">${placeName}</div>
+      <div class="dua-text"><strong>تاريخ الفحص:</strong> ${toEnglish(w.trip_date || new Date().toISOString().slice(0,10))} • ${w.trip_time_label || "الآن"}</div>
       <div class="mini-grid">
         <div class="mini"><div>الحرارة</div><div>${toEnglish(Math.round(w.temperature_2m))}°C</div></div>
         <div class="mini"><div>الإحساس</div><div>${toEnglish(Math.round(w.apparent_temperature))}°C</div></div>
@@ -346,6 +354,7 @@ function renderTripCard(place, w){
         <a class="small tab" style="text-decoration:none" target="_blank" href="https://www.google.com/maps/search/?api=1&query=${place.latitude},${place.longitude}">فتح في الخريطة</a>
         <button class="small btn"
           data-place="${htmlAttrSafe(placeName)}"
+          data-date="${htmlAttrSafe(w.trip_date || new Date().toISOString().slice(0,10))}"
           data-temp="${htmlAttrSafe(Math.round(w.temperature_2m))}"
           data-apparent="${htmlAttrSafe(Math.round(w.apparent_temperature))}"
           data-wind="${htmlAttrSafe(Math.round(w.wind_speed_10m))}"
@@ -367,6 +376,7 @@ async function searchTripLocationV9(){
   if(!input || !results) return;
 
   const query = input.value.trim();
+  const tripDate = (document.getElementById("tripDateInput") || {}).value || new Date().toISOString().slice(0,10);
   if(!query){
     alert("اكتب اسم المكان أولاً");
     return;
@@ -406,7 +416,7 @@ async function searchTripLocationV9(){
 
     const cards = [];
     for(const place of places.slice(0,3)){
-      const w = await getWeatherForTripPlace(place);
+      const w = await getWeatherForTripPlace(place, tripDate);
       cards.push(renderTripCard(place, w));
     }
 
@@ -596,7 +606,7 @@ setTimeout(()=>{
 
 
 
-/* ===== V20 Safe Trip WhatsApp Share ===== */
+/* ===== V21 Safe Trip WhatsApp Share ===== */
 function htmlAttrSafe(v){
   return String(v ?? "")
     .replace(/&/g, "&amp;")
@@ -611,6 +621,7 @@ function shareTripFromButton(btn){
 `🧺 فحص الرحلة والشوي
 
 المكان: ${btn.dataset.place || "--"}
+التاريخ: ${btn.dataset.date || "--"}
 النتيجة: ${btn.dataset.title || "--"}
 التقييم: ${btn.dataset.score || "--"}/100
 

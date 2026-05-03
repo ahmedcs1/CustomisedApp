@@ -1,4 +1,4 @@
-const CACHE_VERSION = "customised-app-v20-stable-appjs-fix";
+const CACHE_VERSION = "customised-app-v21-clean-trip-forecast";
 const LOCAL_FILES = [
   "./",
   "./index.html",
