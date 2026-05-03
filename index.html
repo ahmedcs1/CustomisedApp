@@ -344,4 +344,25 @@ window.EVENING_ADHKAR = ["أمسينا وأمسى الملك لله، والحم
 })();
 </script>
 
+
+<button type="button" onclick="openFriendShareModal()" style="width:100%;padding:16px;border:none;border-radius:18px;font-weight:800;margin:12px 0;">
+📲 نشر للأصدقاء
+</button>
+
+<div id="friendShareModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:999999;padding:14px;overflow:auto;">
+<div style="max-width:700px;margin:20px auto;background:#fff;border-radius:20px;padding:18px;direction:rtl;">
+<h2>📲 نشر للأصدقاء</h2>
+<label><input type="checkbox" id="fs_prayer"> مواقيت الصلاة</label><br>
+<label><input type="checkbox" id="fs_weather"> الطقس</label><br>
+<label><input type="checkbox" id="fs_workout"> تمرين اليوم المنزلي</label><br>
+<label><input type="checkbox" id="fs_calendar"> التقويم الهجري والميلادي</label><br>
+<label><input type="checkbox" id="fs_morning"> أذكار الصباح</label><br>
+<label><input type="checkbox" id="fs_evening"> أذكار المساء</label><br>
+
+<div id="friendDuaList" style="margin-top:14px;max-height:220px;overflow:auto;"></div>
+
+<button onclick="sendFriendShareWhatsApp()" style="width:100%;padding:14px;margin-top:14px;">إرسال الآن</button>
+<button onclick="closeFriendShareModal()" style="width:100%;padding:14px;margin-top:10px;">إغلاق</button>
+</div>
+</div>
 </body></html>

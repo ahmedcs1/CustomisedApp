@@ -637,3 +637,59 @@ ${btn.dataset.notes || "--"}
 تم الإرسال من تطبيق أحمد المحاميد.`;
   shareToWhatsApp(msg);
 }
+
+/* V22 Share */
+function openFriendShareModal(){
+ const m=document.getElementById("friendShareModal");
+ if(m)m.style.display="block";
+ renderFriendDuaList();
+}
+function closeFriendShareModal(){
+ const m=document.getElementById("friendShareModal");
+ if(m)m.style.display="none";
+}
+function renderFriendDuaList(){
+ const box=document.getElementById("friendDuaList");
+ if(!box)return;
+ let list=(window.PRESET_DUAS||[]).slice(0,10);
+ box.innerHTML=list.map((d,i)=>'<label style="display:block;margin:6px 0;"><input type="checkbox" class="friend-dua-check" value="'+(d.text||'')+'"> '+(d.title||'دعاء')+'</label>').join("");
+}
+function sendFriendShareWhatsApp(){
+ let msg="بسم الله الرحمن الرحيم\n\n";
+ const city=(selectedCity&&selectedCity.label)?selectedCity.label:"مدينتي";
+
+ if(document.getElementById("fs_prayer")?.checked){
+   msg+="مواقيت الصلاة في "+city+"\n";
+   msg+="الفجر: "+(prayerTimes.Fajr||"--")+"\n";
+   msg+="الظهر: "+(prayerTimes.Dhuhr||"--")+"\n";
+   msg+="العصر: "+(prayerTimes.Asr||"--")+"\n";
+   msg+="المغرب: "+(prayerTimes.Maghrib||"--")+"\n";
+   msg+="العشاء: "+(prayerTimes.Isha||"--")+"\n\n";
+ }
+
+ if(document.getElementById("fs_weather")?.checked){
+   msg+="حالة الطقس الآن\n";
+   msg+="الحرارة: "+getTextSafe("temperature")+"\n";
+   msg+="الحالة: "+getTextSafe("weatherDescription")+"\n\n";
+ }
+
+ if(document.getElementById("fs_workout")?.checked){
+   msg+="تمرين اليوم المنزلي 💪\n20 دقيقة حركة + تمارين استقامة الظهر\n\n";
+ }
+
+ if(document.getElementById("fs_calendar")?.checked){
+   msg+="التاريخ اليوم\n";
+   msg+="ميلادي: "+getTextSafe("currentDate")+"\n";
+   msg+="هجري: "+getTextSafe("hijriDate")+"\n\n";
+ }
+
+ if(document.getElementById("fs_morning")?.checked || document.getElementById("fs_evening")?.checked){
+   const checked=[...document.querySelectorAll(".friend-dua-check:checked")].map(x=>x.value);
+   if(checked.length){
+     msg+="أدعية مختارة 🤍\n"+checked.join("\n\n")+"\n\n";
+   }
+ }
+
+ msg+="🌸 أسعد الله يومكم بكل خير 🌸";
+ shareToWhatsApp(msg);
+}
