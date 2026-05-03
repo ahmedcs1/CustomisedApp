@@ -152,3 +152,4 @@
 - تنظيف رموز الإيموجي المكسورة من الرسائل.
 - الحفاظ على خاتمة: ادعوا لأخيكم أحمد المحاميد.
 - فحص app.js باستخدام node --check.
+\n## V26 - Final Update + Adhkar Restore\n- زر تحديث نهائي مستقل عن app.js.\n- يمسح الكاش ويلغي Service Workers القديمة ثم يفتح ?v=26&fresh=timestamp.\n- Service Worker Network First للـ HTML/JS.\n- إضافة Fallback للأذكار والأدعية إذا لم تظهر.\n- فحص app.js باستخدام node --check.\n

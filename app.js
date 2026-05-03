@@ -1,3 +1,41 @@
+
+/* ===== V26 Adhkar Restore ===== */
+(function(){
+  if(!window.MORNING_ADHKAR || !Array.isArray(window.MORNING_ADHKAR) || !window.MORNING_ADHKAR.length){
+    window.MORNING_ADHKAR=[
+      "أصبحنا وأصبح الملك لله، والحمد لله، لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير.",
+      "اللهم بك أصبحنا، وبك أمسينا، وبك نحيا، وبك نموت، وإليك النشور.",
+      "اللهم أنت ربي لا إله إلا أنت، خلقتني وأنا عبدك، وأنا على عهدك ووعدك ما استطعت، أعوذ بك من شر ما صنعت، أبوء لك بنعمتك علي، وأبوء بذنبي فاغفر لي فإنه لا يغفر الذنوب إلا أنت.",
+      "بسم الله الذي لا يضر مع اسمه شيء في الأرض ولا في السماء وهو السميع العليم. ثلاث مرات",
+      "أعوذ بكلمات الله التامات من شر ما خلق."
+    ];
+  }
+  if(!window.EVENING_ADHKAR || !Array.isArray(window.EVENING_ADHKAR) || !window.EVENING_ADHKAR.length){
+    window.EVENING_ADHKAR=[
+      "أمسينا وأمسى الملك لله، والحمد لله، لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير.",
+      "اللهم بك أمسينا، وبك أصبحنا، وبك نحيا، وبك نموت، وإليك المصير.",
+      "اللهم أنت ربي لا إله إلا أنت، خلقتني وأنا عبدك، وأنا على عهدك ووعدك ما استطعت، أعوذ بك من شر ما صنعت، أبوء لك بنعمتك علي، وأبوء بذنبي فاغفر لي فإنه لا يغفر الذنوب إلا أنت.",
+      "بسم الله الذي لا يضر مع اسمه شيء في الأرض ولا في السماء وهو السميع العليم. ثلاث مرات",
+      "أعوذ بكلمات الله التامات من شر ما خلق."
+    ];
+  }
+  if(!window.PRESET_DUAS || !Array.isArray(window.PRESET_DUAS) || !window.PRESET_DUAS.length){
+    window.PRESET_DUAS=[
+      {title:"قضاء الدين والغنى من الفقر",category:"الرزق والدين",text:"اللهم رب السماوات السبع ورب الأرض ورب العرش العظيم، ربنا ورب كل شيء، فالق الحب والنوى، ومنزل التوراة والإنجيل والفرقان، أعوذ بك من شر كل شيء أنت آخذ بناصيته. اللهم أنت الأول فليس قبلك شيء، وأنت الآخر فليس بعدك شيء، وأنت الظاهر فليس فوقك شيء، وأنت الباطن فليس دونك شيء، اقض عنا الدين وأغننا من الفقر.",status:"approved"},
+      {title:"الاستعاذة بكلمات الله التامات",category:"الحفظ والتحصين",text:"أعوذ بكلمات الله التامات من شر ما خلق وذرأ وبرأ، ومن شر ما ينزل من السماء، ومن شر ما يعرج فيها، ومن شر ما يخرج من الأرض، ومن شر ما يذرأ فيها، ومن شر فتن الليل والنهار، ومن شر كل طارق إلا طارقًا يطرق بخير يا رحمن.",status:"approved"},
+      {title:"الغنى بالحلال",category:"الرزق والدين",text:"اللهم يا غني يا حميد، يا مبدئ يا معيد، يا رحيم يا ودود، أغنني بحلالك عن حرامك، واكفني بفضلك عمن سواك.",status:"approved"},
+      {title:"حسبنا الله سيؤتينا الله من فضله",category:"الرزق والدين",text:"حسبنا الله سيؤتينا الله من فضله إنا إلى ربنا راغبون.",status:"approved"}
+    ];
+  }
+})();
+function safeRenderAdhkarV26(){
+  try{
+    var m=document.getElementById("morningList"), e=document.getElementById("eveningList");
+    if(m) m.innerHTML=(window.MORNING_ADHKAR||[]).map((x,i)=>'<div class="dhikr"><div class="dua-title">'+toEnglish(i+1)+'. ذكر الصباح</div><div class="dua-text">'+x+'</div></div>').join("");
+    if(e) e.innerHTML=(window.EVENING_ADHKAR||[]).map((x,i)=>'<div class="dhikr"><div class="dua-title">'+toEnglish(i+1)+'. ذكر المساء</div><div class="dua-text">'+x+'</div></div>').join("");
+  }catch(err){}
+}
+
 const CITIES=[
 {name:"الدوحة - قطر",label:"الدوحة",lat:25.2854,lng:51.5310,tz:3},
 {name:"عمّان - الأردن",label:"عمّان",lat:31.9539,lng:35.9106,tz:3},
@@ -61,7 +99,7 @@ function updateQibla(head=null){qiblaBearing=qibla(selectedCity.lat,selectedCity
 function handleOrientation(e){let h=null;if(typeof e.webkitCompassHeading==="number")h=e.webkitCompassHeading;else if(typeof e.alpha==="number")h=360-e.alpha;if(typeof h==="number"&&!Number.isNaN(h))updateQibla(h)}
 compassButton.onclick=()=>{if(typeof DeviceOrientationEvent==="undefined"){compassNote.textContent="البوصلة غير مدعومة";return}let start=()=>{window.removeEventListener("deviceorientation",handleOrientation,true);window.removeEventListener("deviceorientationabsolute",handleOrientation,true);window.addEventListener("deviceorientation",handleOrientation,true);window.addEventListener("deviceorientationabsolute",handleOrientation,true);compassNote.textContent="تم التشغيل. حرّك الجوال على شكل 8 للمعايرة."};if(typeof DeviceOrientationEvent.requestPermission==="function"){DeviceOrientationEvent.requestPermission().then(s=>s==="granted"?start():compassNote.textContent="لم يتم السماح بالبوصلة").catch(()=>compassNote.textContent="تعذر تشغيل البوصلة")}else start()}
 gpsButton.onclick=()=>{if(!navigator.geolocation){alert("GPS غير مدعوم");return}gpsButton.textContent="📍 جاري التحديد...";navigator.geolocation.getCurrentPosition(async p=>{await setGpsAsSelectedCity(p.coords.latitude,p.coords.longitude);gpsButton.textContent="📍 موقعي";smoothedHeading=null},()=>{gpsButton.textContent="📍 موقعي";alert("تعذر تحديد الموقع")},{enableHighAccuracy:true,timeout:10000})}
-function renderAdhkar(){morningList.innerHTML=window.MORNING_ADHKAR.map((x,i)=>`<div class="dhikr"><div class="dua-title">${toEnglish(i+1)}. ذكر الصباح</div><div class="dua-text">${x}</div></div>`).join("");eveningList.innerHTML=window.EVENING_ADHKAR.map((x,i)=>`<div class="dhikr"><div class="dua-title">${toEnglish(i+1)}. ذكر المساء</div><div class="dua-text">${x}</div></div>`).join("")}
+function renderAdhkar(){safeRenderAdhkarV26()}
 function getDuas(){let custom=JSON.parse(localStorage.getItem("customDuas")||"[]").map(d=>({...d,status:d.status||"pending"}));return [...window.PRESET_DUAS.map(d=>({...d,status:"approved"})),...custom]}
 function renderDuas(){let q=(duaSearch.value||"").trim();let list=getDuas().filter(d=>!q||(`${d.title} ${d.category} ${d.text}`).includes(q));duaList.innerHTML=list.map((d,i)=>`<div class="dua-card"><div class="dua-title">${toEnglish(i+1)}. ${d.title} <span class="tag">${d.category||"عام"}</span> <span class="tag">${d.status==="approved"?"موثق":"بانتظار التوثيق"}</span></div><div class="dua-text">${d.text}</div></div>`).join("")}
 addDuaBtn.onclick=()=>{let title=duaTitle.value.trim()||"دعاء جديد",category=(document.getElementById("duaCategorySelect")?.value || duaCategory.value.trim() || "خاص"),text=duaText.value.trim();if(!text){alert("اكتب نص الدعاء أولاً");return}let custom=JSON.parse(localStorage.getItem("customDuas")||"[]");custom.unshift({title,category,text,status:(document.getElementById("duaStatus")?.value || "pending"),addedAt:new Date().toISOString()});localStorage.setItem("customDuas",JSON.stringify(custom));duaTitle.value=duaCategory.value=duaText.value="";renderDuas()}
@@ -700,7 +738,7 @@ function sendFriendShareWhatsApp(){
 }
 
 
-/* ===== V25 Performance + Share Fixes ===== */
+/* ===== V26 Performance + Share Fixes ===== */
 function getApprovedDuasForFriendShare(){
   try{
     return getDuas().filter(d => d.status === "approved").slice(0, 24);
@@ -784,7 +822,7 @@ function v24FastOpen(url){
 }
 
 
-/* ===== V25 Location Name + Emoji Fix ===== */
+/* ===== V26 Location Name + Emoji Fix ===== */
 function cleanShareEmojiText(text){
   return String(text || "").replace(/\uFFFD/g, "");
 }
@@ -820,7 +858,7 @@ async function setGpsAsSelectedCity(lat, lng){
   try{ await refreshAll(); }catch(e){}
 }
 
-function buildV25FriendMessage(){
+function buildV26FriendMessage(){
  let msg = "بسم الله الرحمن الرحيم\n\n";
  msg += "﴿ إِنَّ اللَّهَ وَمَلَائِكَتَهُ يُصَلُّونَ عَلَى النَّبِيِّ ۚ يَا أَيُّهَا الَّذِينَ آمَنُوا صَلُّوا عَلَيْهِ وَسَلِّمُوا تَسْلِيمًا ﴾\n\n";
  msg += "اللهم صلِّ وسلم وبارك على سيدنا محمد وعلى آله وصحبه أجمعين\n\n";
@@ -874,5 +912,7 @@ function buildV25FriendMessage(){
 }
 
 function sendFriendShareWhatsApp(){
-  shareToWhatsApp(buildV25FriendMessage());
+  shareToWhatsApp(buildV26FriendMessage());
 }
+
+setTimeout(safeRenderAdhkarV26,300);setTimeout(safeRenderAdhkarV26,1200);

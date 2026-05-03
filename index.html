@@ -100,7 +100,7 @@ body.dark{--bg:#020617;--card:rgba(15,23,42,.88);--text:#e5e7eb;--muted:#94a3b8;
 <button id="alertButton">🔔 التنبيهات</button>
 
 <div class="clean-controls">
-  <button type="button" onclick="v21HardRefresh()">🔄 تحديث</button>
+  <button type="button" onclick="v26FinalUpdate()">🔄 تحديث</button>
   <button type="button" onclick="v21RequestPermissions()">🔐 تفعيل الصلاحيات</button>
   <button type="button" onclick="v21OpenTerms()">📜 الشروط والخصوصية</button>
 </div>
@@ -386,4 +386,30 @@ window.EVENING_ADHKAR = ["أمسينا وأمسى الملك لله، والحم
 <button onclick="closeFriendShareModal()" style="width:100%;padding:14px;margin-top:10px;">إغلاق</button>
 </div>
 </div>
+
+<script>
+async function v26FinalUpdate(){
+  try{
+    document.querySelectorAll("button").forEach(function(b){
+      if((b.textContent||"").includes("تحديث")) b.textContent="⏳ يتم التحديث...";
+    });
+    if("caches" in window){
+      const keys = await caches.keys();
+      await Promise.all(keys.map(k => caches.delete(k)));
+    }
+    if("serviceWorker" in navigator){
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(r => r.unregister()));
+    }
+  }catch(e){}
+  alert("تم تنظيف الكاش. سيتم فتح آخر نسخة الآن.");
+  location.replace(location.origin + location.pathname + "?v=26&fresh=" + Date.now());
+}
+window.addEventListener("load", function(){
+  document.querySelectorAll("button").forEach(function(b){
+    if((b.textContent||"").includes("تحديث")) b.onclick = v26FinalUpdate;
+  });
+});
+</script>
+
 </body></html>
