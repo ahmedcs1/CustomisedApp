@@ -80,6 +80,11 @@ body.dark{--bg:#020617;--card:rgba(15,23,42,.88);--text:#e5e7eb;--muted:#94a3b8;
 }
 
 </style>
+
+<link rel="preconnect" href="https://api.open-meteo.com">
+<link rel="preconnect" href="https://api.aladhan.com">
+<link rel="dns-prefetch" href="https://api.open-meteo.com">
+<link rel="dns-prefetch" href="https://api.aladhan.com">
 </head>
 <body>
 <main class="page">
@@ -95,7 +100,7 @@ body.dark{--bg:#020617;--card:rgba(15,23,42,.88);--text:#e5e7eb;--muted:#94a3b8;
 <button id="alertButton">🔔 التنبيهات</button>
 
 <div class="clean-controls">
-  <button type="button" onclick="v21HardRefresh()">🔄 تحديث قوي</button>
+  <button type="button" onclick="v21HardRefresh()">🔄 تحديث</button>
   <button type="button" onclick="v21RequestPermissions()">🔐 تفعيل الصلاحيات</button>
   <button type="button" onclick="v21OpenTerms()">📜 الشروط والخصوصية</button>
 </div>
@@ -118,9 +123,10 @@ body.dark{--bg:#020617;--card:rgba(15,23,42,.88);--text:#e5e7eb;--muted:#94a3b8;
 <button class="tab" data-tab="adhkar">الأذكار</button>
 <button class="tab" data-tab="duas">الأدعية</button>
 <button class="tab" data-tab="sleep">النوم الذكي</button>
-<button class="tab" onclick="window.location.href=\'weekly-full-plan.html\'">🏋️ تمارين الظهر والعمود</button>
+<a class="tab" href="./workout-dashboard.html?v=24" style="text-decoration:none">💪 Workout Dashboard</a>
+<button class="tab" onclick="window.location.href=\'weekly-full-plan.html\'">🏋️ تمارين للظهر والعمود الفقري</button>
 <button class="tab" data-tab="trip">🧺 فحص الرحلات</button>
-<a class="tab" href="./workout-dashboard.html?v=12" style="text-decoration:none">💪 Workout Dashboard</a>
+
 <a class="tab" href="./women-fitness.html?v=14" style="text-decoration:none">👩 رشاقة السيدات</a>
 <a class="tab" href="./nutrition-dashboard.html?v=14" style="text-decoration:none">🥗 Nutrition</a>
 <a class="tab" href="./calendar-dashboard.html?v=16" style="text-decoration:none">📅 التقويم</a>
@@ -135,7 +141,7 @@ body.dark{--bg:#020617;--card:rgba(15,23,42,.88);--text:#e5e7eb;--muted:#94a3b8;
 <div class="card wide"><div class="card-title"><span>🧭 القبلة</span><span class="tag">High Accuracy</span></div><div class="compass"><div class="mark n">N</div><div class="mark s">S</div><div class="mark e">E</div><div class="mark w">W</div><div class="needle-wrap" id="qiblaNeedleWrap"><div class="needle"></div><div class="needle-base"></div></div><div class="kaaba">🕋</div></div><div class="qibla-degree" id="qiblaDegree">--</div><button id="compassButton">تشغيل البوصلة ومعايرة الاتجاه</button><div class="notice" id="compassNote">لأفضل دقة: فعّل GPS، حرّك الجوال على شكل 8، وابتعد عن المعادن. دقة البوصلة تعتمد على حساس الجهاز والمتصفح.</div></div>
 
 <div class="card wide">
-  <div class="card-title"><span>🏋️ تمارين الظهر والعمود</span><span class="tag">برنامج أسبوعي</span></div>
+  <div class="card-title"><span>🏋️ تمارين للظهر والعمود الفقري</span><span class="tag">برنامج أسبوعي</span></div>
   <p class="notice">برنامج مرتب لتقوية عضلات الظهر، دعم العمود الفقري، تحسين الاستقامة، دعم الأكتاف، وتمارين البيت والجيم.</p>
   <button class="btn" onclick="window.location.href='weekly-full-plan.html'">فتح صفحة التمارين</button>
 </div>
@@ -195,7 +201,22 @@ body.dark{--bg:#020617;--card:rgba(15,23,42,.88);--text:#e5e7eb;--muted:#94a3b8;
 
 <section id="duas" class="section">
 <div class="card wide"><div class="card-title"><span>🤲 الأدعية</span><span class="tag">قابل للإضافة</span></div>
-<div class="form-grid"><input id="duaTitle" placeholder="عنوان الدعاء"><input id="duaCategory" placeholder="التصنيف"><textarea id="duaText" placeholder="اكتب الدعاء هنا"></textarea><button id="addDuaBtn" class="btn">إضافة الدعاء</button></div>
+<div class="form-grid"><input id="duaTitle" placeholder="عنوان الدعاء"><select id="duaCategorySelect">
+<option value="">اختر التصنيف</option>
+<option value="الأذكار">الأذكار</option>
+<option value="الرزق والدين">الرزق والدين</option>
+<option value="الحفظ والتحصين">الحفظ والتحصين</option>
+<option value="الكرب والبلاء">الكرب والبلاء</option>
+<option value="النوم">النوم</option>
+<option value="الأهل والذرية">الأهل والذرية</option>
+<option value="الشفاء والرقية">الشفاء والرقية</option>
+<option value="خاص">خاص</option>
+</select>
+<input id="duaCategory" placeholder="أو اكتب تصنيف آخر">
+<select id="duaStatus">
+<option value="pending">بانتظار توثيقي</option>
+<option value="approved">موثق من أحمد</option>
+</select><textarea id="duaText" placeholder="اكتب الدعاء هنا"></textarea><p class="notice">الدعاء الجديد يُحفظ مبدئيًا بانتظار التوثيق، ولا يظهر في نشر الأصدقاء إلا إذا كان موثقًا.</p><button id="addDuaBtn" class="btn">إضافة الدعاء</button></div>
 <input id="duaSearch" placeholder="بحث في الأدعية...">
 <div id="duaList" class="dua-list" style="margin-top:12px"></div>
 </div>

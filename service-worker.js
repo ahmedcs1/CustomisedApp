@@ -1,4 +1,4 @@
-const CACHE_VERSION = "customised-app-v21-clean-trip-forecast";
+const CACHE_VERSION = "customised-app-v24-performance-share-fixes";
 const LOCAL_FILES = [
   "./",
   "./index.html",

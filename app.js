@@ -29,7 +29,7 @@ function applyDark(){document.body.classList.toggle("dark",darkMode);darkModeBut
 darkModeButton.onclick=()=>{darkMode=!darkMode;localStorage.setItem("darkMode",String(darkMode));applyDark()};
 window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e;installButton.style.display="block"});
 installButton.onclick=async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;installButton.style.display="none"};
-if("serviceWorker"in navigator)navigator.serviceWorker.register("service-worker.js");
+if("serviceWorker" in navigator){ window.addEventListener("load",()=>navigator.serviceWorker.register("service-worker.js").catch(()=>{})); }
 function rad(d){return d*Math.PI/180} function deg(r){return r*180/Math.PI} function n360(v){v%=360;return v<0?v+360:v} function n24(v){v%=24;return v<0?v+24:v}
 function dayOfYear(d){let s=new Date(Date.UTC(d.getFullYear(),0,0));return Math.floor((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())-s)/86400000)}
 function sunTime(date,rise){let zen=90.833,N=dayOfYear(date),lngH=selectedCity.lng/15,t=N+((rise?6:18)-lngH)/24,M=.9856*t-3.289,L=n360(M+1.916*Math.sin(rad(M))+.020*Math.sin(rad(2*M))+282.634),RA=n360(deg(Math.atan(.91764*Math.tan(rad(L))))),Lq=Math.floor(L/90)*90,RAq=Math.floor(RA/90)*90;RA=(RA+(Lq-RAq))/15;let sinD=.39782*Math.sin(rad(L)),cosD=Math.cos(Math.asin(sinD)),cosH=(Math.cos(rad(zen))-(sinD*Math.sin(rad(selectedCity.lat))))/(cosD*Math.cos(rad(selectedCity.lat)));if(cosH>1||cosH<-1)return null;let H=(rise?360-deg(Math.acos(cosH)):deg(Math.acos(cosH)))/15,T=H+RA-.06571*t-6.622,UT=n24(T-lngH);return n24(UT+selectedCity.tz)}
@@ -62,9 +62,9 @@ function handleOrientation(e){let h=null;if(typeof e.webkitCompassHeading==="num
 compassButton.onclick=()=>{if(typeof DeviceOrientationEvent==="undefined"){compassNote.textContent="البوصلة غير مدعومة";return}let start=()=>{window.removeEventListener("deviceorientation",handleOrientation,true);window.removeEventListener("deviceorientationabsolute",handleOrientation,true);window.addEventListener("deviceorientation",handleOrientation,true);window.addEventListener("deviceorientationabsolute",handleOrientation,true);compassNote.textContent="تم التشغيل. حرّك الجوال على شكل 8 للمعايرة."};if(typeof DeviceOrientationEvent.requestPermission==="function"){DeviceOrientationEvent.requestPermission().then(s=>s==="granted"?start():compassNote.textContent="لم يتم السماح بالبوصلة").catch(()=>compassNote.textContent="تعذر تشغيل البوصلة")}else start()}
 gpsButton.onclick=()=>{if(!navigator.geolocation){alert("GPS غير مدعوم");return}gpsButton.textContent="📍 جاري التحديد...";navigator.geolocation.getCurrentPosition(async p=>{selectedCity={name:"موقعي الحالي",label:"موقعي",lat:p.coords.latitude,lng:p.coords.longitude,tz:3};localStorage.setItem("selectedCity",JSON.stringify(selectedCity));gpsButton.textContent="📍 موقعي";smoothedHeading=null;await refreshAll()},()=>{gpsButton.textContent="📍 موقعي";alert("تعذر تحديد الموقع")},{enableHighAccuracy:true,timeout:10000})}
 function renderAdhkar(){morningList.innerHTML=window.MORNING_ADHKAR.map((x,i)=>`<div class="dhikr"><div class="dua-title">${toEnglish(i+1)}. ذكر الصباح</div><div class="dua-text">${x}</div></div>`).join("");eveningList.innerHTML=window.EVENING_ADHKAR.map((x,i)=>`<div class="dhikr"><div class="dua-title">${toEnglish(i+1)}. ذكر المساء</div><div class="dua-text">${x}</div></div>`).join("")}
-function getDuas(){let custom=JSON.parse(localStorage.getItem("customDuas")||"[]");return [...window.PRESET_DUAS,...custom]}
-function renderDuas(){let q=(duaSearch.value||"").trim();let list=getDuas().filter(d=>!q||(`${d.title} ${d.category} ${d.text}`).includes(q));duaList.innerHTML=list.map((d,i)=>`<div class="dua-card"><div class="dua-title">${toEnglish(i+1)}. ${d.title} <span class="tag">${d.category||"عام"}</span></div><div class="dua-text">${d.text}</div></div>`).join("")}
-addDuaBtn.onclick=()=>{let title=duaTitle.value.trim()||"دعاء جديد",category=duaCategory.value.trim()||"خاص",text=duaText.value.trim();if(!text){alert("اكتب نص الدعاء أولاً");return}let custom=JSON.parse(localStorage.getItem("customDuas")||"[]");custom.unshift({title,category,text});localStorage.setItem("customDuas",JSON.stringify(custom));duaTitle.value=duaCategory.value=duaText.value="";renderDuas()}
+function getDuas(){let custom=JSON.parse(localStorage.getItem("customDuas")||"[]").map(d=>({...d,status:d.status||"pending"}));return [...window.PRESET_DUAS.map(d=>({...d,status:"approved"})),...custom]}
+function renderDuas(){let q=(duaSearch.value||"").trim();let list=getDuas().filter(d=>!q||(`${d.title} ${d.category} ${d.text}`).includes(q));duaList.innerHTML=list.map((d,i)=>`<div class="dua-card"><div class="dua-title">${toEnglish(i+1)}. ${d.title} <span class="tag">${d.category||"عام"}</span> <span class="tag">${d.status==="approved"?"موثق":"بانتظار التوثيق"}</span></div><div class="dua-text">${d.text}</div></div>`).join("")}
+addDuaBtn.onclick=()=>{let title=duaTitle.value.trim()||"دعاء جديد",category=(document.getElementById("duaCategorySelect")?.value || duaCategory.value.trim() || "خاص"),text=duaText.value.trim();if(!text){alert("اكتب نص الدعاء أولاً");return}let custom=JSON.parse(localStorage.getItem("customDuas")||"[]");custom.unshift({title,category,text,status:(document.getElementById("duaStatus")?.value || "pending"),addedAt:new Date().toISOString()});localStorage.setItem("customDuas",JSON.stringify(custom));duaTitle.value=duaCategory.value=duaText.value="";renderDuas()}
 duaSearch.oninput=renderDuas;
 async function refreshAll(){
   try{ cityPill.textContent=selectedCity.label || "الدوحة"; }catch(e){}
@@ -208,7 +208,7 @@ async function searchTripLocation(){
           data-score="${htmlAttrSafe(Math.max(0, Math.round(decision.score)))}"
           data-notes="${htmlAttrSafe(decision.reasons.join('\n'))}"
           onclick="shareTripFromButton(this)">📲 إرسال النتيجة واتساب</button>
-        <button class="small btn" onclick="shareToWhatsApp('🧺 فحص الرحلة والشوي متاح داخل التطبيق. افتح التطبيق لمشاهدة التفاصيل.')">📲 إرسال واتساب</button>
+        
           </div>
         </div>
       `);
@@ -364,7 +364,7 @@ function renderTripCard(place, w){
           data-score="${htmlAttrSafe(Math.max(0, Math.round(decision.score)))}"
           data-notes="${htmlAttrSafe(decision.reasons.join('\n'))}"
           onclick="shareTripFromButton(this)">📲 إرسال النتيجة واتساب</button>
-        <button class="small btn" onclick="shareToWhatsApp('🧺 فحص الرحلة والشوي متاح داخل التطبيق. افتح التطبيق لمشاهدة التفاصيل.')">📲 إرسال واتساب</button>
+        
       </div>
     </div>
   `;
@@ -697,4 +697,88 @@ function sendFriendShareWhatsApp(){
 
  msg+="🌸 أسعد الله يومكم بكل خير وبركة 🌸";
  shareToWhatsApp(msg);
+}
+
+
+/* ===== V24 Performance + Share Fixes ===== */
+function getApprovedDuasForFriendShare(){
+  try{
+    return getDuas().filter(d => d.status === "approved").slice(0, 24);
+  }catch(e){
+    return (window.PRESET_DUAS || []).slice(0, 12).map(d => ({...d, status:"approved"}));
+  }
+}
+
+function renderFriendDuaList(){
+ const box=document.getElementById("friendDuaList");
+ if(!box)return;
+ let list=getApprovedDuasForFriendShare();
+ box.innerHTML=list.length ? list.map((d,i)=>{
+   const txt = String(d.text || "").replace(/"/g,"&quot;");
+   return '<label style="display:block;margin:6px 0;"><input type="checkbox" class="friend-dua-check" value="'+txt+'"> '+(d.title||'دعاء')+'</label>';
+ }).join("") : "<div>لا توجد أدعية موثقة حالياً</div>";
+}
+
+function sendFriendShareWhatsApp(){
+ let msg = "بسم الله الرحمن الرحيم\n\n";
+ msg += "﴿ إِنَّ اللَّهَ وَمَلَائِكَتَهُ يُصَلُّونَ عَلَى النَّبِيِّ ۚ يَا أَيُّهَا الَّذِينَ آمَنُوا صَلُّوا عَلَيْهِ وَسَلِّمُوا تَسْلِيمًا ﴾\n\n";
+ msg += "اللهم صلِّ وسلم وبارك على سيدنا محمد وعلى آله وصحبه أجمعين\n\n";
+
+ const city=(selectedCity&&selectedCity.label)?selectedCity.label:"المنطقة المختارة";
+ if(!selectedCity || !selectedCity.label){
+   alert("اختر الموقع أولاً حتى يظهر اسم المنطقة في الرسالة.");
+   return;
+ }
+ const appLink = location.origin + location.pathname.replace(/\/[^\/]*$/, "/");
+
+ if(document.getElementById("fs_prayer")?.checked){
+   msg+="📍 مواقيت الصلاة في "+city+"\n\n";
+   msg+="الفجر: "+(prayerTimes.Fajr||"--")+"\n";
+   msg+="الشروق: "+(prayerTimes.Sunrise||"--")+"\n";
+   msg+="الظهر: "+(prayerTimes.Dhuhr||"--")+"\n";
+   msg+="العصر: "+(prayerTimes.Asr||"--")+"\n";
+   msg+="المغرب: "+(prayerTimes.Maghrib||"--")+"\n";
+   msg+="العشاء: "+(prayerTimes.Isha||"--")+"\n\n";
+ }
+
+ if(document.getElementById("fs_weather")?.checked){
+   msg+="🌤️ حالة الطقس الآن في "+city+"\n\n";
+   msg+="الحرارة: "+getTextSafe("temperature")+"\n";
+   msg+="الإحساس: "+getTextSafe("apparentTemp")+"\n";
+   msg+="الحالة: "+getTextSafe("weatherDescription")+"\n";
+   msg+="الرطوبة: "+getTextSafe("humidity")+"\n";
+   msg+="الرياح: "+getTextSafe("windSpeed")+"\n\n";
+ }
+
+ if(document.getElementById("fs_workout")?.checked){
+   msg+="💪 تمرين اليوم المنزلي\n\n";
+   msg+="• 10 دقائق مشي خفيف أو حركة لتنشيط الجسم\n";
+   msg+="• 3 × 12 تمارين استقامة الظهر ودعم الكتفين\n";
+   msg+="• 3 × 10 تمارين تقوية أسفل الظهر والـ Core\n";
+   msg+="• 2 × 30 ثانية Plank أو تمرين ثبات مناسب\n";
+   msg+="• تمارين إطالة للرقبة والكتفين والظهر لمدة 5 دقائق\n";
+   msg+="• لا تنسى شرب كمية مناسبة من المياه\n\n";
+ }
+
+ if(document.getElementById("fs_calendar")?.checked){
+   msg+="📅 تاريخ اليوم\n\n";
+   msg+="ميلادي: "+getTextSafe("currentDate")+"\n";
+   msg+="هجري: "+getTextSafe("hijriDate")+"\n\n";
+ }
+
+ if(document.getElementById("fs_morning")?.checked || document.getElementById("fs_evening")?.checked){
+   const checked=[...document.querySelectorAll(".friend-dua-check:checked")].map(x=>x.value).filter(Boolean);
+   if(checked.length){
+     msg+="🤍 أدعية مختارة\n\n"+checked.join("\n\n")+"\n\n";
+   }
+ }
+
+ msg+="🌸 أسعد الله يومكم بكل خير وبركة 🌸\n\n";
+ msg+="ادعوا لأخيكم أحمد المحاميد\n\n";
+ msg+="رابط التطبيق:\n"+appLink;
+ shareToWhatsApp(msg);
+}
+
+function v24FastOpen(url){
+  location.href = url;
 }
