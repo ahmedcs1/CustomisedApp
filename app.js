@@ -655,7 +655,7 @@ function renderFriendDuaList(){
  box.innerHTML=list.map((d,i)=>'<label style="display:block;margin:6px 0;"><input type="checkbox" class="friend-dua-check" value="'+(d.text||'')+'"> '+(d.title||'دعاء')+'</label>').join("");
 }
 function sendFriendShareWhatsApp(){
- let msg="بسم الله الرحمن الرحيم\n\n";
+ let msg="بسم الله الرحمن الرحيم\n\n﴿ إِنَّ اللَّهَ وَمَلَائِكَتَهُ يُصَلُّونَ عَلَى النَّبِيِّ ۚ يَا أَيُّهَا الَّذِينَ آمَنُوا صَلُّوا عَلَيْهِ وَسَلِّمُوا تَسْلِيمًا ﴾\n\nاللهم صلِّ وسلم وبارك على سيدنا محمد وعلى آله وصحبه أجمعين\n\n";
  const city=(selectedCity&&selectedCity.label)?selectedCity.label:"مدينتي";
 
  if(document.getElementById("fs_prayer")?.checked){
@@ -668,13 +668,18 @@ function sendFriendShareWhatsApp(){
  }
 
  if(document.getElementById("fs_weather")?.checked){
-   msg+="حالة الطقس الآن\n";
+   msg+="🌤️ حالة الطقس الآن في "+city+"\n";
    msg+="الحرارة: "+getTextSafe("temperature")+"\n";
    msg+="الحالة: "+getTextSafe("weatherDescription")+"\n\n";
  }
 
  if(document.getElementById("fs_workout")?.checked){
-   msg+="تمرين اليوم المنزلي 💪\n20 دقيقة حركة + تمارين استقامة الظهر\n\n";
+   msg+="💪 تمرين اليوم المنزلي\n\n";
+   msg+="• 10 دقائق مشي خفيف أو حركة لتنشيط الجسم\n";
+   msg+="• 3 × 12 تمارين استقامة الظهر ودعم الكتفين\n";
+   msg+="• 3 × 10 تمارين تقوية أسفل الظهر والـ Core\n";
+   msg+="• 2 × 30 ثانية Plank أو تمرين ثبات مناسب\n";
+   msg+="• تمارين إطالة للرقبة والكتفين والظهر لمدة 5 دقائق\n\n";
  }
 
  if(document.getElementById("fs_calendar")?.checked){
@@ -690,6 +695,6 @@ function sendFriendShareWhatsApp(){
    }
  }
 
- msg+="🌸 أسعد الله يومكم بكل خير 🌸";
+ msg+="🌸 أسعد الله يومكم بكل خير وبركة 🌸";
  shareToWhatsApp(msg);
 }
