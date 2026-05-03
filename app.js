@@ -60,7 +60,7 @@ function delta(a,b){return((b-a+540)%360)-180} function smooth(cur,next){return 
 function updateQibla(head=null){qiblaBearing=qibla(selectedCity.lat,selectedCity.lng);let rot=qiblaBearing;if(typeof head==="number"&&!Number.isNaN(head)){smoothedHeading=smooth(smoothedHeading,n360(head));rot=n360(qiblaBearing-smoothedHeading);setText("qiblaDegree",`${Math.round(qiblaBearing)}° | الجهاز ${Math.round(smoothedHeading)}°`)}else setText("qiblaDegree",`${Math.round(qiblaBearing)}° من الشمال`);qiblaNeedleWrap.style.transform=`rotate(${rot}deg)`}
 function handleOrientation(e){let h=null;if(typeof e.webkitCompassHeading==="number")h=e.webkitCompassHeading;else if(typeof e.alpha==="number")h=360-e.alpha;if(typeof h==="number"&&!Number.isNaN(h))updateQibla(h)}
 compassButton.onclick=()=>{if(typeof DeviceOrientationEvent==="undefined"){compassNote.textContent="البوصلة غير مدعومة";return}let start=()=>{window.removeEventListener("deviceorientation",handleOrientation,true);window.removeEventListener("deviceorientationabsolute",handleOrientation,true);window.addEventListener("deviceorientation",handleOrientation,true);window.addEventListener("deviceorientationabsolute",handleOrientation,true);compassNote.textContent="تم التشغيل. حرّك الجوال على شكل 8 للمعايرة."};if(typeof DeviceOrientationEvent.requestPermission==="function"){DeviceOrientationEvent.requestPermission().then(s=>s==="granted"?start():compassNote.textContent="لم يتم السماح بالبوصلة").catch(()=>compassNote.textContent="تعذر تشغيل البوصلة")}else start()}
-gpsButton.onclick=()=>{if(!navigator.geolocation){alert("GPS غير مدعوم");return}gpsButton.textContent="📍 جاري التحديد...";navigator.geolocation.getCurrentPosition(async p=>{selectedCity={name:"موقعي الحالي",label:"موقعي",lat:p.coords.latitude,lng:p.coords.longitude,tz:3};localStorage.setItem("selectedCity",JSON.stringify(selectedCity));gpsButton.textContent="📍 موقعي";smoothedHeading=null;await refreshAll()},()=>{gpsButton.textContent="📍 موقعي";alert("تعذر تحديد الموقع")},{enableHighAccuracy:true,timeout:10000})}
+gpsButton.onclick=()=>{if(!navigator.geolocation){alert("GPS غير مدعوم");return}gpsButton.textContent="📍 جاري التحديد...";navigator.geolocation.getCurrentPosition(async p=>{await setGpsAsSelectedCity(p.coords.latitude,p.coords.longitude);gpsButton.textContent="📍 موقعي";smoothedHeading=null},()=>{gpsButton.textContent="📍 موقعي";alert("تعذر تحديد الموقع")},{enableHighAccuracy:true,timeout:10000})}
 function renderAdhkar(){morningList.innerHTML=window.MORNING_ADHKAR.map((x,i)=>`<div class="dhikr"><div class="dua-title">${toEnglish(i+1)}. ذكر الصباح</div><div class="dua-text">${x}</div></div>`).join("");eveningList.innerHTML=window.EVENING_ADHKAR.map((x,i)=>`<div class="dhikr"><div class="dua-title">${toEnglish(i+1)}. ذكر المساء</div><div class="dua-text">${x}</div></div>`).join("")}
 function getDuas(){let custom=JSON.parse(localStorage.getItem("customDuas")||"[]").map(d=>({...d,status:d.status||"pending"}));return [...window.PRESET_DUAS.map(d=>({...d,status:"approved"})),...custom]}
 function renderDuas(){let q=(duaSearch.value||"").trim();let list=getDuas().filter(d=>!q||(`${d.title} ${d.category} ${d.text}`).includes(q));duaList.innerHTML=list.map((d,i)=>`<div class="dua-card"><div class="dua-title">${toEnglish(i+1)}. ${d.title} <span class="tag">${d.category||"عام"}</span> <span class="tag">${d.status==="approved"?"موثق":"بانتظار التوثيق"}</span></div><div class="dua-text">${d.text}</div></div>`).join("")}
@@ -221,7 +221,7 @@ async function searchTripLocation(){
 }
 
 async function selectTripAsCity(name, lat, lng){
-  selectedCity = {name:name, label:name, lat:Number(lat), lng:Number(lng), tz:3};
+  selectedCity = {name:name, label:name, shareLabel:name, lat:Number(lat), lng:Number(lng), tz:3};
   localStorage.setItem("selectedCity", JSON.stringify(selectedCity));
   if(typeof refreshAll === "function") await refreshAll();
   alert("تم اعتماد الموقع داخل التطبيق");
@@ -427,7 +427,7 @@ async function searchTripLocationV9(){
 }
 
 async function selectTripAsCity(name, lat, lng, country){
-  selectedCity = {name:name, label:name, country:country || "", lat:Number(lat), lng:Number(lng), tz:3};
+  selectedCity = {name:name, label:name, shareLabel:name, country:country || "", lat:Number(lat), lng:Number(lng), tz:3};
   localStorage.setItem("selectedCity", JSON.stringify(selectedCity));
   if(typeof refreshAll === "function") await refreshAll();
   alert("تم اعتماد الموقع داخل التطبيق");
@@ -700,7 +700,7 @@ function sendFriendShareWhatsApp(){
 }
 
 
-/* ===== V24 Performance + Share Fixes ===== */
+/* ===== V25 Performance + Share Fixes ===== */
 function getApprovedDuasForFriendShare(){
   try{
     return getDuas().filter(d => d.status === "approved").slice(0, 24);
@@ -781,4 +781,98 @@ function sendFriendShareWhatsApp(){
 
 function v24FastOpen(url){
   location.href = url;
+}
+
+
+/* ===== V25 Location Name + Emoji Fix ===== */
+function cleanShareEmojiText(text){
+  return String(text || "").replace(/\uFFFD/g, "");
+}
+
+function getFriendlyLocationName(){
+  try{
+    const c = selectedCity || {};
+    const bad = ["موقعي", "موقعي الحالي", "My Location", "Current Location"];
+    if(c.shareLabel && !bad.includes(c.shareLabel)) return c.shareLabel;
+    if(c.label && !bad.includes(c.label)) return c.label;
+    if(c.name && !bad.includes(c.name)) return c.name;
+    return "المنطقة المختارة";
+  }catch(e){
+    return "المنطقة المختارة";
+  }
+}
+
+async function reverseGeocodeLocationName(lat, lng){
+  try{
+    const url = `https://geocoding-api.open-meteo.com/v1/reverse?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lng)}&language=ar&format=json`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const r = (data.results && data.results[0]) ? data.results[0] : null;
+    if(r) return r.name || r.admin1 || r.country || "موقعي";
+  }catch(e){}
+  return "موقعي";
+}
+
+async function setGpsAsSelectedCity(lat, lng){
+  const realName = await reverseGeocodeLocationName(lat, lng);
+  selectedCity = {name: realName, label: realName, shareLabel: realName, lat: Number(lat), lng: Number(lng), tz: 3};
+  localStorage.setItem("selectedCity", JSON.stringify(selectedCity));
+  try{ await refreshAll(); }catch(e){}
+}
+
+function buildV25FriendMessage(){
+ let msg = "بسم الله الرحمن الرحيم\n\n";
+ msg += "﴿ إِنَّ اللَّهَ وَمَلَائِكَتَهُ يُصَلُّونَ عَلَى النَّبِيِّ ۚ يَا أَيُّهَا الَّذِينَ آمَنُوا صَلُّوا عَلَيْهِ وَسَلِّمُوا تَسْلِيمًا ﴾\n\n";
+ msg += "اللهم صلِّ وسلم وبارك على سيدنا محمد وعلى آله وصحبه أجمعين\n\n";
+ const city = getFriendlyLocationName();
+ const appLink = location.origin + location.pathname.replace(/\/[^\/]*$/, "/");
+
+ if(document.getElementById("fs_prayer")?.checked){
+   msg += "📍 مواقيت الصلاة في " + city + "\n\n";
+   msg += "الفجر: " + (prayerTimes.Fajr || "--") + "\n";
+   msg += "الشروق: " + (prayerTimes.Sunrise || "--") + "\n";
+   msg += "الظهر: " + (prayerTimes.Dhuhr || "--") + "\n";
+   msg += "العصر: " + (prayerTimes.Asr || "--") + "\n";
+   msg += "المغرب: " + (prayerTimes.Maghrib || "--") + "\n";
+   msg += "العشاء: " + (prayerTimes.Isha || "--") + "\n\n";
+ }
+
+ if(document.getElementById("fs_weather")?.checked){
+   msg += "🌤️ حالة الطقس الآن في " + city + "\n\n";
+   msg += "الحرارة: " + getTextSafe("temperature") + "\n";
+   msg += "الإحساس: " + getTextSafe("apparentTemp") + "\n";
+   msg += "الحالة: " + getTextSafe("weatherDescription") + "\n";
+   msg += "الرطوبة: " + getTextSafe("humidity") + "\n";
+   msg += "الرياح: " + getTextSafe("windSpeed") + "\n\n";
+ }
+
+ if(document.getElementById("fs_workout")?.checked){
+   msg += "💪 تمرين اليوم المنزلي\n\n";
+   msg += "• 10 دقائق مشي خفيف أو حركة لتنشيط الجسم\n";
+   msg += "• 3 × 12 تمارين استقامة الظهر ودعم الكتفين\n";
+   msg += "• 3 × 10 تمارين تقوية أسفل الظهر والـ Core\n";
+   msg += "• 2 × 30 ثانية Plank أو تمرين ثبات مناسب\n";
+   msg += "• تمارين إطالة للرقبة والكتفين والظهر لمدة 5 دقائق\n";
+   msg += "• لا تنسى شرب كمية مناسبة من المياه\n\n";
+ }
+
+ if(document.getElementById("fs_calendar")?.checked){
+   msg += "📅 تاريخ اليوم\n\n";
+   msg += "ميلادي: " + getTextSafe("currentDate") + "\n";
+   msg += "هجري: " + getTextSafe("hijriDate") + "\n\n";
+ }
+
+ if(document.getElementById("fs_morning")?.checked || document.getElementById("fs_evening")?.checked){
+   const checked = [...document.querySelectorAll(".friend-dua-check:checked")].map(x => x.value).filter(Boolean);
+   if(checked.length) msg += "🤍 أدعية مختارة\n\n" + checked.join("\n\n") + "\n\n";
+ }
+
+ msg += "🌸 أسعد الله يومكم بكل خير وبركة 🌸\n\n";
+ msg += "ادعوا لأخيكم أحمد المحاميد\n\n";
+ msg += "رابط التطبيق:\n" + appLink;
+ return cleanShareEmojiText(msg);
+}
+
+function sendFriendShareWhatsApp(){
+  shareToWhatsApp(buildV25FriendMessage());
 }

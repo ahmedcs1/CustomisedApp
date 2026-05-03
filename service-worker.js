@@ -1,4 +1,4 @@
-const CACHE_VERSION = "customised-app-v24-performance-share-fixes";
+const CACHE_VERSION = "customised-app-v25-location-emoji-fix";
 const LOCAL_FILES = [
   "./",
   "./index.html",
